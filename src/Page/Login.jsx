@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import authServices from "../server/auth/authServices";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
-export default function AstrolLogin() {
-  const [username, setUsername] = useState("");
+export default function Login() {
+  const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handlLogin = async (e) => {
     e.preventDefault(); // prevent default form submit
     try {
-      const res = await authServices.Login({ username, password });
+      const res = await authServices.Login({ email, password });
       console.log("Login Response:", res.data);
       alert("Login Success ✅");
 
@@ -77,33 +81,43 @@ export default function AstrolLogin() {
           <div>
             <label className="text-sm text-indigo-200/70">User name</label>
             <motion.input
-              whileFocus={{ scale: 1.01 }} 
+              whileFocus={{ scale: 1.01 }}
               className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
-              placeholder="you@stars.com"
+              placeholder="you@gmail.com"
               // type="email"
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setemail(e.target.value)}
             />
           </div>
 
-          <div>
+          <div className="relative">
             <label className="text-sm text-indigo-200/70">Password</label>
-            <motion.input
-              whileFocus={{ scale: 1.01 }}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
-              placeholder="Your secret constellation"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="flex items-center">
+
+              <motion.input
+                whileFocus={{ scale: 1.01 }}
+                className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none pr-10"
+                placeholder="Your secret constellation"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <div
+                className="absolute mt-6 top- right-3 transform -translate-y-1/2 text-indigo-300 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              </div>
+            </div>
           </div>
+
 
           <div className="flex items-center justify-between text-sm text-indigo-200/70">
             <label className="flex items-center gap-2">
-              <input type="checkbox" className="form-checkbox h-4 w-4 rounded-md accent-indigo-400" />
-              Remember me
+              {/* <input type="checkbox" className="form-checkbox h-4 w-4 rounded-md accent-indigo-400" />
+              Remember me */}
             </label>
             <a href="#" className="hover:underline">Forgot?</a>
           </div>
@@ -118,7 +132,8 @@ export default function AstrolLogin() {
           </motion.button>
 
           <div className="pt-4 border-t border-indigo-600/20 text-center text-indigo-200/70">
-            Don't have an account? <a className="text-indigo-300 hover:underline" href="#">Create one</a>
+            Don't have an account?   <Link className="text-indigo-300 hover:underline" to="/signup">Create one</Link>
+            {/* <a className="text-indigo-300 hover:underline" href="signup">Create one</a> */}
           </div>
         </form>
       </motion.div>
@@ -148,3 +163,4 @@ export default function AstrolLogin() {
     </div>
   );
 }
+

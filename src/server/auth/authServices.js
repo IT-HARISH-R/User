@@ -4,7 +4,7 @@ const authServices = {
     Login: async (data) => {
         try {
             console.log(data)
-            const res = await api.post('user/login/', data)
+            const res = await api.post('/api/auth/login/', data)
             console.log(res)
             return res
         }
