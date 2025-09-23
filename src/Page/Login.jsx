@@ -4,18 +4,33 @@ import authServices from "../server/auth/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
 
-export default function Login() {
+export const Login = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-
   const handlLogin = async (e) => {
-    e.preventDefault(); // prevent default form submit
+    e.preventDefault();
     try {
       const res = await authServices.Login({ email, password });
       console.log("Login Response:", res.data);
+
+      // 1️⃣ Save tokens to localStorage
+      localStorage.setItem("accessToken", res.data.access);
+      localStorage.setItem("refreshToken", res.data.refresh);
+
+      // 2️⃣ Optionally save userId if you need it
+      const userId = res.data.user_id || null;
+      if (userId) localStorage.setItem("userId", userId);
+
       alert("Login Success ✅");
+
+      // 3️⃣ Call profile API
+      const profileRes = await authServices.getProfile();
+      console.log("Profile Data:", profileRes.data);
+
+      // You can store profile data too if needed
+      // localStorage.setItem("profile", JSON.stringify(profileRes.data));
 
     } catch (err) {
       console.error("Login Error:", err);
@@ -23,9 +38,9 @@ export default function Login() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden">
 
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden md:px-4">
       {/* twinkling stars layer */}
       <div className="absolute inset-0 pointer-events-none">
         <svg className="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,15 +50,11 @@ export default function Login() {
               <stop offset="100%" stopColor="#fff" stopOpacity="0" />
             </radialGradient>
           </defs>
-
-          {/* stars */}
           <circle className="star animate-twinkle" cx="10%" cy="20%" r="1.7" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-200" cx="25%" cy="60%" r="1.2" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-400" cx="70%" cy="10%" r="1.5" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-600" cx="85%" cy="55%" r="1.0" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-800" cx="40%" cy="30%" r="1.4" fill="url(#g1)" />
-
-          {/* constellation */}
           <g className="opacity-70">
             <line x1="20%" y1="30%" x2="30%" y2="40%" stroke="#8ab4ff66" strokeWidth="0.8" className="animate-line" />
             <line x1="30%" y1="40%" x2="45%" y2="28%" stroke="#8ab4ff66" strokeWidth="0.8" className="animate-line animation-delay-300" />
@@ -61,7 +72,7 @@ export default function Login() {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 w-full max-w-md mx-4 bg-gradient-to-br from-black/60 via-indigo-950/60 to-transparent border border-indigo-600/30 rounded-2xl p-8 shadow-2xl backdrop-blur-md"
+        className="relative z-10 w-full sm:max-w-md mx-auto bg-gradient-to-br from-black/60 via-indigo-950/60 to-transparent border border-indigo-600/30 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-md"
       >
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center shadow-lg">
@@ -71,20 +82,19 @@ export default function Login() {
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-white">AstroLogin</h2>
-            <p className="text-sm text-indigo-200/80">Sign in to discover your daily cosmic hints ✨</p>
+            <h2 className="text-2xl font-semibold text-white">Astro Login</h2>
+            <p className="text-sm text-indigo-200/80">Login to discover your daily cosmic hints ✨</p>
           </div>
         </div>
 
         {/* Login form */}
         <form className="space-y-4" onSubmit={handlLogin}>
           <div>
-            <label className="text-sm text-indigo-200/70">User name</label>
+            <label className="text-sm text-indigo-200/70">Email</label>
             <motion.input
               whileFocus={{ scale: 1.01 }}
               className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
               placeholder="you@gmail.com"
-              // type="email"
               required
               value={email}
               onChange={(e) => setemail(e.target.value)}
@@ -94,7 +104,6 @@ export default function Login() {
           <div className="relative">
             <label className="text-sm text-indigo-200/70">Password</label>
             <div className="flex items-center">
-
               <motion.input
                 whileFocus={{ scale: 1.01 }}
                 className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none pr-10"
@@ -105,7 +114,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <div
-                className="absolute mt-6 top- right-3 transform -translate-y-1/2 text-indigo-300 cursor-pointer"
+                className="absolute  right-3 mt-7 transform -translate-y-1/2 text-indigo-300 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
@@ -113,12 +122,7 @@ export default function Login() {
             </div>
           </div>
 
-
-          <div className="flex items-center justify-between text-sm text-indigo-200/70">
-            <label className="flex items-center gap-2">
-              {/* <input type="checkbox" className="form-checkbox h-4 w-4 rounded-md accent-indigo-400" />
-              Remember me */}
-            </label>
+          <div className="flex items-center justify-end text-sm text-indigo-200/70">
             <a href="#" className="hover:underline">Forgot?</a>
           </div>
 
@@ -128,20 +132,18 @@ export default function Login() {
             className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md"
             type="submit"
           >
-            Sign In
+            Login
           </motion.button>
 
           <div className="pt-4 border-t border-indigo-600/20 text-center text-indigo-200/70">
-            Don't have an account?   <Link className="text-indigo-300 hover:underline" to="/signup">Create one</Link>
-            {/* <a className="text-indigo-300 hover:underline" href="signup">Create one</a> */}
+            Don't have an account? <Link className="text-indigo-300 hover:underline" to="/signup">Create one</Link>
           </div>
         </form>
       </motion.div>
 
       {/* footer constellation glow */}
-      <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-gradient-to-r from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none opacity-80"></div>
+      <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[800px] h-[400px] rounded-full bg-gradient-to-r from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none opacity-80"></div>
 
-      {/* 🔮 Twinkle + Line Animations */}
       <style>{`
         .star { filter: drop-shadow(0 0 6px rgba(200,220,255,0.9)); }
         @keyframes twinkle {
@@ -163,4 +165,3 @@ export default function Login() {
     </div>
   );
 }
-
