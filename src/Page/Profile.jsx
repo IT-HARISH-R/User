@@ -1,21 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Fetch user info from localStorage
-    const storedUser = localStorage.getItem("profile"); 
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser); // parse JSON string
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
-        setUser(null);
-      }
-    }
-  }, []);
+  const user = useSelector((state) => state.auth.user); 
 
   if (!user) return <div className="p-6 text-white">Loading profile...</div>;
 
@@ -27,8 +14,8 @@ const Profile = () => {
           <p><strong>ID:</strong> {user.id}</p>
           <p><strong>Username:</strong> {user.username}</p>
           <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>First Name:</strong> {user.first_name || "Not provided"}</p>
-          <p><strong>Last Name:</strong> {user.last_name || "Not provided"}</p>
+          <p><strong>First Name:</strong> {user.first_name || "NA"}</p>
+          <p><strong>Last Name:</strong> {user.last_name || "NA"}</p>
           <p><strong>Role:</strong> {user.role}</p>
         </div>
       </div>

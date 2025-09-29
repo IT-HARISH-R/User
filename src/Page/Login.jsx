@@ -3,12 +3,15 @@ import { motion } from "framer-motion";
 import authServices from "../server/auth/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/slices/authSlice";
 
 export const Login = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handlLogin = async (e) => {
     e.preventDefault();
@@ -16,24 +19,17 @@ export const Login = () => {
       const res = await authServices.Login({ email, password });
       console.log("Login Response:", res.data);
 
-      // 1️⃣ Save tokens to localStorage
       localStorage.setItem("accessToken", res.data.access);
       localStorage.setItem("refreshToken", res.data.refresh);
 
-      // 2️⃣ Optionally save userId if you need it
-      const userId = res.data.user_id || null;
-      if (userId) localStorage.setItem("userId", userId);
 
       alert("Login Success ✅");
       navigate("/")
-      // 3️⃣ Call profile API
+
       const profileRes = await authServices.getProfile();
-      localStorage.setItem("profile", JSON.stringify(profileRes.data));
+
       console.log("Profile Data:", profileRes.data);
-
-      // You can store profile data too if needed
-      // localStorage.setItem("profile", JSON.stringify(profileRes.data));
-
+      dispatch(login(profileRes.data));
     } catch (err) {
       console.error("Login Error:", err);
       alert(err.response.data.detail || "Login failed ❌");
