@@ -1,4 +1,4 @@
-import api from "../axios"; // your axios instance
+import api from "./axios"; 
 
 const authServices = {
     // Login function

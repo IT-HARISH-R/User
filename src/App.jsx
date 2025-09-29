@@ -5,6 +5,7 @@ import { Login } from './Page/Login';
 import { Signup } from './Page/Signup';
 import Menu from './components/Menu';
 import Profile from './Page/profile';
+import AstroForm from './Page/AstroForm';
 const App = () => {
   return (
 
@@ -16,6 +17,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/predict" element={<AstroForm />} />
+
       </Routes>
     </>
 

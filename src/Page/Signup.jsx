@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import authServices from "../server/auth/authServices";
+import authServices from "../server/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
 
 export const Signup = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setusername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handlLogin = async (e) => {
@@ -71,6 +72,17 @@ export const Signup = () => {
 
         {/* Login form */}
         <form className="space-y-4" onSubmit={handlLogin}>
+          <div>
+            <label className="text-sm text-indigo-200/70">username</label>
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
+              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
+              placeholder="you@gmail.com"
+              required
+              value={username}
+              onChange={(e) => setusername(e.target.value)}
+            />
+          </div>
           <div>
             <label className="text-sm text-indigo-200/70">Email</label>
             <motion.input

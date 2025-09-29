@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import authServices from "../server/auth/authServices";
+import authServices from "../server/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";

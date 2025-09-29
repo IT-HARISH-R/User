@@ -32,6 +32,7 @@ const Menu = () => {
 
             {user ? (
               <>
+                <Link to="/predict" className="hover:text-indigo-300 transition-colors">prediction</Link>
                 <Link to="/profile" className="hover:text-indigo-300 transition-colors">Profile</Link>
                 <button
                   onClick={handleLogout}
