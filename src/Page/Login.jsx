@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import authServices from "../server/auth/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handlLogin = async (e) => {
     e.preventDefault();
@@ -24,9 +25,10 @@ export const Login = () => {
       if (userId) localStorage.setItem("userId", userId);
 
       alert("Login Success ✅");
-
+      navigate("/")
       // 3️⃣ Call profile API
       const profileRes = await authServices.getProfile();
+      localStorage.setItem("profile", JSON.stringify(profileRes.data));
       console.log("Profile Data:", profileRes.data);
 
       // You can store profile data too if needed
@@ -34,7 +36,7 @@ export const Login = () => {
 
     } catch (err) {
       console.error("Login Error:", err);
-      alert("Login Failed ❌");
+      alert(err.response.data.detail || "Login failed ❌");
     }
   };
 
