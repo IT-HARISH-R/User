@@ -1,7 +1,18 @@
-import api from "./axios"; 
+import api from "./axios";
 
 const authServices = {
-    // Login function
+    // Register function
+    Register: async (data) => {
+        try {
+            console.log("Login Data:", data);
+            const res = await api.post("/api/auth/register/", data);
+            console.log("Login Response:", res);
+            return res;
+        } catch (err) {
+            console.error("Login error:", err);
+            throw err;
+        }
+    },
     Login: async (data) => {
         try {
             console.log("Login Data:", data);

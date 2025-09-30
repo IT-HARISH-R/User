@@ -2,23 +2,34 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import authServices from "../server/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Signup = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setusername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
   const handlLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await authServices.Login({ email, password });
+      const res = await authServices.Register({ email, password, username });
       console.log("Login Response:", res.data);
-      alert("Login Success ✅");
+      alert("Register Successful");
+      navigate('/login')
     } catch (err) {
       console.error("Login Error:", err);
-      alert("Login Failed ❌");
+      alert(
+        err.response?.data?.email ||
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        "Sign Failed"
+      );
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,11 +84,11 @@ export const Signup = () => {
         {/* Login form */}
         <form className="space-y-4" onSubmit={handlLogin}>
           <div>
-            <label className="text-sm text-indigo-200/70">username</label>
+            <label className="text-sm text-indigo-200/70">Name</label>
             <motion.input
               whileFocus={{ scale: 1.01 }}
               className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
-              placeholder="you@gmail.com"
+              placeholder="Name"
               required
               value={username}
               onChange={(e) => setusername(e.target.value)}
@@ -88,7 +99,7 @@ export const Signup = () => {
             <motion.input
               whileFocus={{ scale: 1.01 }}
               className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
-              placeholder="you@gmail.com"
+              placeholder="You@gmail.com"
               required
               value={email}
               onChange={(e) => setemail(e.target.value)}
@@ -126,7 +137,33 @@ export const Signup = () => {
             className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md"
             type="submit"
           >
-            Signup
+            {loading ? (
+              <div className="flex justify-center items-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Sign in...
+              </div>
+            ) : (
+              "Signup"
+            )}
           </motion.button>
 
 

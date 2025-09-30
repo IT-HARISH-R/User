@@ -10,11 +10,13 @@ export const Login = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handlLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await authServices.Login({ email, password });
       console.log("Login Response:", res.data);
@@ -23,7 +25,7 @@ export const Login = () => {
       localStorage.setItem("refreshToken", res.data.refresh);
 
 
-      alert("Login Success ✅");
+      alert("Login Success");
       navigate("/")
 
       const profileRes = await authServices.getProfile();
@@ -32,7 +34,9 @@ export const Login = () => {
       dispatch(login(profileRes.data));
     } catch (err) {
       console.error("Login Error:", err);
-      alert(err.response.data.detail || "Login failed ❌");
+      alert(err.response.data.detail || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +97,7 @@ export const Login = () => {
               whileFocus={{ scale: 1.01 }}
               className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
               placeholder="you@gmail.com"
+              name="email"
               required
               value={email}
               onChange={(e) => setemail(e.target.value)}
@@ -130,7 +135,33 @@ export const Login = () => {
             className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md"
             type="submit"
           >
-            Login
+            {loading ? (
+              <div className="flex justify-center items-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </motion.button>
 
           <div className="pt-4 border-t border-indigo-600/20 text-center text-indigo-200/70">
