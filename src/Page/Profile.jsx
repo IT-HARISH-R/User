@@ -11,7 +11,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    alert("Logged out successfully 🚀");
+    alert("Logged out successfully");
     navigate("/login");
   };
 
@@ -90,7 +90,7 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* 🔥 Logout button */}
+        {/*Logout button */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

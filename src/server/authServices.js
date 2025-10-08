@@ -1,7 +1,7 @@
 import api from "./axios";
 
 const authServices = {
-    // Register function
+    // Register api
     Register: async (data) => {
         try {
             console.log("Login Data:", data);
@@ -13,6 +13,8 @@ const authServices = {
             throw err;
         }
     },
+    // Login api
+
     Login: async (data) => {
         try {
             console.log("Login Data:", data);
@@ -25,15 +27,16 @@ const authServices = {
         }
     },
 
-    // Get Profile function
+    // Get Profile api
     getProfile: async () => {
         try {
             const token = localStorage.getItem("accessToken")
             // console.log("tok", tok)
-            const res = await api.get(`api/auth/profile/`, {
+            const res = await api.get(`api/auth/profile/`)
+            //     , {
 
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            //     headers: { Authorization: `Bearer ${token}` },
+            // });
             return res;
         } catch (err) {
             console.error("Get Profile error:", err);

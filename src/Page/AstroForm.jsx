@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Zap, Calendar, Clock, Sun, Moon, Key } from "lucide-react";
 import astroServices from "../server/astroServices"; // API integration
+import { isSupported, speak } from "../utils/tts";
+import { playCoquiTTS } from "../utils/coquiTTS";
 
 // --- STAR BACKGROUND COMPONENT ---
 const Star = ({ style }) => (
@@ -62,22 +64,18 @@ const AstroForm = () => {
     const handleChange = (e) => {
         let { name, value } = e.target;
 
-        // restrict month <= 12
         if (name === "month") {
             if (value > 12) value = "12";
         }
 
-        // restrict day <= 31
         if (name === "day") {
             if (value > 31) value = "31";
         }
 
-        // restrict hour <= 23
         if (name === "hour") {
             if (value > 23) value = "23";
         }
 
-        // restrict minute <= 59
         if (name === "minute") {
             if (value > 59) value = "59";
         }
@@ -184,7 +182,7 @@ const AstroForm = () => {
                                 : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-purple-500/30"
                             }`}
                     >
-                        {loading ? "Calculating Fate..." : <span className="flex items-center justify-center space-x-2"><Zap className="w-5 h-5" /> Get Cosmic Prediction</span>}
+                        {loading ? "Calculating Fate..." : <span className="flex items-center justify-center space-x-2"><Zap className="w-5 h-5" />Get Cosmic Prediction</span>}
                     </motion.button>
                 </form>
 
@@ -199,19 +197,40 @@ const AstroForm = () => {
                         transition={{ duration: 0.5 }}
                         className="mt-8 space-y-6 p-6 rounded-xl border border-purple-600/50 bg-gray-900/50 shadow-inner"
                     >
-                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">
+                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 flex items-center justify-between">
                             🌟 Your Daily Cosmic Hint
+                            {/* {isSupported() && (
+                                <button
+                                    onClick={() => playCoquiTTS(result.thanglish_explanation)}
+                                    className="ml-4 bg-indigo-600 hover:bg-indigo-500 px-3 py-1 rounded-lg text-sm font-semibold"
+                                >
+                                    🔊 Listen (Coqui)
+                                </button>
+                            )} */}
                         </h3>
 
                         <div className="bg-gray-800/60 p-4 rounded-lg border border-gray-700/50">
-                            <p className="text-indigo-100 whitespace-pre-line leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: result.thanglish_explanation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                            <p
+                                className="text-indigo-100 whitespace-pre-line leading-relaxed"
+                                dangerouslySetInnerHTML={{
+                                    __html: result.thanglish_explanation.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                                }}
+                            />
                         </div>
 
                         <div className="mt-4 pt-4 border-t border-indigo-700/50 space-y-2 text-sm text-gray-400">
-                            <p className="flex items-center space-x-2"><Key className="w-4 h-4 text-indigo-400" /> <span>Julian Day: <span className="text-white font-mono">{result.astrology_data.julian_day}</span></span></p>
-                            <p className="flex items-center space-x-2"><Sun className="w-4 h-4 text-orange-400" /> <span>Sun Longitude: <span className="text-white font-mono">{result.astrology_data.sun_longitude}</span></span></p>
-                            <p className="flex items-center space-x-2"><Moon className="w-4 h-4 text-yellow-300" /> <span>Moon Longitude: <span className="text-white font-mono">{result.astrology_data.moon_longitude}</span></span></p>
+                            <p className="flex items-center space-x-2">
+                                <Key className="w-4 h-4 text-indigo-400" />
+                                <span>Julian Day: <span className="text-white font-mono">{result.astrology_data.julian_day}</span></span>
+                            </p>
+                            <p className="flex items-center space-x-2">
+                                <Sun className="w-4 h-4 text-orange-400" />
+                                <span>Sun Longitude: <span className="text-white font-mono">{result.astrology_data.sun_longitude}</span></span>
+                            </p>
+                            <p className="flex items-center space-x-2">
+                                <Moon className="w-4 h-4 text-yellow-300" />
+                                <span>Moon Longitude: <span className="text-white font-mono">{result.astrology_data.moon_longitude}</span></span>
+                            </p>
                         </div>
                     </motion.div>
                 )}
