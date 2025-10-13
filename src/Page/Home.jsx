@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LuSparkles, LuUser, LuInfo, LuStar } from "react-icons/lu";
+import authServices from "../server/authServices";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../redux/slices/authSlice";
 
-// A component to create the twinkling star background
+// 🌌 STAR BACKGROUND COMPONENT
 const StarBackground = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+
+        // 🔹 Condition check
+        if (!user && token) {
+          const profileRes = await authServices.getProfile();
+          console.log("Profile Data:", profileRes.data);
+
+          dispatch(login(profileRes.data));
+        } else {
+          console.log("🪐 Skipped fetching — user exists or token missing");
+        }
+      } catch (err) {
+        console.error("❌ Failed to load profile:", err);
+      }
+    };
+
+    fetchProfile();
+  }, [dispatch, user]);
+
+  // ✨ Star animation setup
   const stars = [];
   for (let i = 0; i < 150; i++) {
     const style = {
@@ -40,11 +69,13 @@ const StarBackground = () => {
   );
 };
 
+// 🌠 HOME PAGE COMPONENT
 const Home = () => {
+  const user = useSelector((state) => state.auth.user);
   return (
     <div className="min-h-screen flex justify-center items-center relative overflow-hidden bg-gradient-to-b from-gray-900 via-indigo-900 to-black">
       <StarBackground />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -57,7 +88,8 @@ const Home = () => {
           🔮 AstroApp
         </h1>
         <p className="text-lg md:text-xl text-gray-300 font-light">
-          Welcome to the cosmos! Discover personalized insights, daily horoscopes, and powerful predictions powered by Vedic Astrology.
+          Welcome to the cosmos! Discover personalized insights, daily
+          horoscopes, and powerful predictions powered by Vedic Astrology.
         </p>
 
         {/* Info Section */}
@@ -68,7 +100,8 @@ const Home = () => {
               <span>About</span>
             </h2>
             <p className="text-gray-400 text-sm">
-              This platform helps you calculate planetary positions, generate your horoscope, and provide insights based on Vedic astrology.
+              This platform helps you calculate planetary positions, generate
+              your horoscope, and provide insights based on Vedic astrology.
             </p>
           </div>
           <div className="bg-gray-800/50 p-6 rounded-xl border border-indigo-600/20 flex flex-col items-start space-y-2">
@@ -77,7 +110,8 @@ const Home = () => {
               <span>Predictions</span>
             </h2>
             <p className="text-gray-400 text-sm">
-              Try out our prediction feature to know your daily horoscope, life insights, and planetary influences on your journey.
+              Try out our prediction feature to know your daily horoscope, life
+              insights, and planetary influences on your journey.
             </p>
           </div>
         </div>
@@ -91,13 +125,15 @@ const Home = () => {
             <LuUser className="h-5 w-5" />
             <span>View Profile</span>
           </Link>
-          <Link
-            to="/predict"
-            className="w-full sm:w-auto px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
-          >
-            <LuSparkles className="h-5 w-5" />
-            <span>Try Prediction</span>
-          </Link>
+          {user && (
+            <Link
+              to="/predict"
+              className="w-full sm:w-auto px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
+            >
+              <LuSparkles className="h-5 w-5" />
+              <span>Try Prediction</span>
+            </Link>
+          )}
         </div>
       </motion.div>
     </div>

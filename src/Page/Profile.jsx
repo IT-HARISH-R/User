@@ -11,6 +11,8 @@ const Profile = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("refreshToken");
     alert("Logged out successfully");
     navigate("/login");
   };
