@@ -1,20 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../redux/slices/authSlice";
+import { logout, UpdateUser } from "../redux/slices/authSlice"; // optional update action
+import authServices from "../server/authServices";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    username: user?.username || "",
+    first_name: user?.first_name || "",
+    last_name: user?.last_name || "",
+    birth_year: user?.birth_year || "",
+    birth_month: user?.birth_month || "",
+    birth_day: user?.birth_day || "",
+    birth_hour: user?.birth_hour || "",
+    birth_minute: user?.birth_minute || "",
+  });
+
   const handleLogout = () => {
     dispatch(logout());
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     alert("Logged out successfully");
     navigate("/login");
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    try {
+      const res = await authServices.updateProfile(formData); // call API
+      if (res.status === 200) {
+        alert("Profile updated successfully!");
+        dispatch(UpdateUser(res.data)); // update redux state
+        setEditMode(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update profile.");
+    }
   };
 
   if (!user) {
@@ -35,26 +64,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden md:px-4">
-      {/* twinkling background + floating icons */}
-      <div className="absolute inset-0 pointer-events-none">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="star" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#fff" stopOpacity="1" />
-              <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <circle className="star animate-twinkle" cx="10%" cy="25%" r="1.5" fill="url(#star)" />
-          <circle className="star animate-twinkle animation-delay-400" cx="80%" cy="20%" r="1.6" fill="url(#star)" />
-          <circle className="star animate-twinkle animation-delay-800" cx="50%" cy="60%" r="1.2" fill="url(#star)" />
-          {/* Sun & Moon icons */}
-          <text x="20%" y="10%" className="text-yellow-400 text-3xl animate-pulse">🌞</text>
-          <text x="75%" y="15%" className="text-gray-200 text-2xl animate-pulse animation-delay-400">🌙</text>
-          <text x="45%" y="70%" className="text-indigo-300 text-xl animate-pulse animation-delay-800">✨</text>
-        </svg>
-      </div>
-
-      {/* Profile card */}
+      {/* Profile Card */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -68,56 +78,93 @@ const Profile = () => {
           >
             {user.username ? user.username[0].toUpperCase() : "U"}
           </motion.div>
-          <h2 className="mt-4 text-2xl font-semibold text-white">
-            {user.username || "Unnamed User"}
-          </h2>
-          <p className="text-indigo-300">{user.email}</p>
+          {editMode ? (
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="mt-4 text-2xl font-semibold text-white bg-black/30 px-2 rounded"
+            />
+          ) : (
+            <h2 className="mt-4 text-2xl font-semibold text-white">
+              {user.username || "Unnamed User"}
+            </h2>
+          )}
+          <p className="text-indigo-300">{user.email}</p> {/* email not editable */}
         </div>
 
+        {/* Profile Info */}
         <div className="mt-6 space-y-3 text-indigo-200/80">
-          {[
-            { label: "ID", value: user.id },
-            { label: "First Name", value: user.first_name || "-" },
-            { label: "Last Name", value: user.last_name || "-" },
-            { label: "Role", value: user.role || "User" },
-          ].map((item, idx) => (
+          <motion.div className="flex justify-between border-b border-indigo-600/20 pb-2 px-2 rounded">
+            <span>ID</span>
+            <span>{user.id}</span> {/* ID not editable */}
+          </motion.div>
+
+          <motion.div className="flex justify-between border-b border-indigo-600/20 pb-2 px-2 rounded">
+            <span>Role</span>
+            <span>{user.role}</span> {/* Role not editable */}
+          </motion.div>
+
+          {/* Editable fields */}
+          {["first_name", "last_name", "birth_day", "birth_month", "birth_year", "birth_hour", "birth_minute"].map((field, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.02, shadow: "0 0 15px rgba(79,70,229,0.5)" }}
               className="flex justify-between border-b border-indigo-600/20 pb-2 px-2 rounded"
             >
-              <span>{item.label}</span>
-              <span>{item.value}</span>
+              <span>{field.replace("_", " ").toUpperCase()}</span>
+              {editMode ? (
+                <input
+                  type="text"
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  className="bg-black/30 px-1 rounded text-white w-20 text-right"
+                />
+              ) : (
+                <span>{formData[field] || "-"}</span>
+              )}
             </motion.div>
           ))}
         </div>
 
-        {/*Logout button */}
+        {/* Buttons */}
+        <div className="mt-6 flex space-x-3">
+          {editMode ? (
+            <>
+              <motion.button
+                onClick={handleSave}
+                className="flex-1 py-2 rounded-xl bg-green-500 text-white font-medium shadow-md hover:shadow-lg transition-all"
+              >
+                Save
+              </motion.button>
+              <motion.button
+                onClick={() => setEditMode(false)}
+                className="flex-1 py-2 rounded-xl bg-gray-600 text-white font-medium shadow-md hover:shadow-lg transition-all"
+              >
+                Cancel
+              </motion.button>
+            </>
+          ) : (
+            <motion.button
+              onClick={() => setEditMode(true)}
+              className="flex-1 py-2 rounded-xl bg-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all"
+            >
+              Edit Profile
+            </motion.button>
+          )}
+        </div>
+
+        {/* Logout */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleLogout}
-          className="w-full mt-6 py-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-600 text-white font-medium shadow-md hover:shadow-lg transition-all"
+          className="w-full mt-3 py-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-600 text-white font-medium shadow-md hover:shadow-lg transition-all"
         >
           Logout
         </motion.button>
       </motion.div>
-
-      {/* Glow effect */}
-      <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[800px] h-[400px] rounded-full bg-gradient-to-r from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none opacity-80"></div>
-
-      <style>{`
-        .star { filter: drop-shadow(0 0 6px rgba(200,220,255,0.9)); }
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.2; transform: scale(0.95); }
-          50% { opacity: 1; transform: scale(1.12); }
-        }
-        .animate-twinkle { animation: twinkle 3.6s infinite ease-in-out; }
-        .animation-delay-400 { animation-delay: .4s; }
-        .animation-delay-800 { animation-delay: .8s; }
-        .animate-pulse { animation: pulse 2s infinite alternate; }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-      `}</style>
     </div>
   );
 };

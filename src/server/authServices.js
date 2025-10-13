@@ -27,6 +27,18 @@ const authServices = {
         }
     },
 
+    updateProfile: async (data) => {
+        try {
+            const res = await api.put("api/auth/profile/update/", data);
+            console.log("Login Response:", res);
+            return res;
+        }
+        catch (err) {
+            console.error("updateProfile error:", err);
+            throw err;
+        }
+    },
+
     // Get Profile api
     getProfile: async () => {
         try {

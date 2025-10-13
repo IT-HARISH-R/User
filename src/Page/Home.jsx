@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LuSparkles, LuUser, LuInfo, LuStar } from "react-icons/lu";
+import { LuInfo, LuStar, LuUser, LuSparkles, LuUserPlus } from "react-icons/lu";
 import authServices from "../server/authServices";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/slices/authSlice";
@@ -70,8 +70,9 @@ const StarBackground = () => {
 };
 
 // 🌠 HOME PAGE COMPONENT
-const Home = () => {
+const HomePage = () => {
   const user = useSelector((state) => state.auth.user);
+
   return (
     <div className="min-h-screen flex justify-center items-center relative overflow-hidden bg-gradient-to-b from-gray-900 via-indigo-900 to-black">
       <StarBackground />
@@ -80,8 +81,7 @@ const Home = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 p-10 rounded-2xl border border-indigo-600/30 w-full max-w-3xl backdrop-blur-md text-white text-center space-y-8
-                   shadow-[0_0_60px_rgba(99,102,241,0.5)] bg-black/70"
+        className="relative z-10 p-10 rounded-2xl border border-indigo-600/30 w-full max-w-3xl backdrop-blur-md text-white text-center space-y-8 shadow-[0_0_60px_rgba(99,102,241,0.5)] bg-black/70"
       >
         {/* Title */}
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-white">
@@ -104,6 +104,7 @@ const Home = () => {
               your horoscope, and provide insights based on Vedic astrology.
             </p>
           </div>
+
           <div className="bg-gray-800/50 p-6 rounded-xl border border-indigo-600/20 flex flex-col items-start space-y-2">
             <h2 className="text-2xl font-semibold flex items-center space-x-2">
               <LuStar className="text-purple-400" />
@@ -118,20 +119,31 @@ const Home = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6">
-          <Link
-            to="/profile"
-            className="w-full sm:w-auto px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
-          >
-            <LuUser className="h-5 w-5" />
-            <span>View Profile</span>
-          </Link>
-          {user && (
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                className="w-full sm:w-auto px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
+              >
+                <LuUser className="h-5 w-5" />
+                <span>View Profile</span>
+              </Link>
+
+              <Link
+                to="/predict"
+                className="w-full sm:w-auto px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
+              >
+                <LuSparkles className="h-5 w-5" />
+                <span>Try Prediction</span>
+              </Link>
+            </>
+          ) : (
             <Link
-              to="/predict"
-              className="w-full sm:w-auto px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
+              to="/signup"
+              className="w-full sm:w-auto px-8 py-3 rounded-full bg-green-600 hover:bg-green-500 transition shadow-lg text-lg flex items-center justify-center space-x-2"
             >
-              <LuSparkles className="h-5 w-5" />
-              <span>Try Prediction</span>
+              <LuUserPlus className="h-5 w-5" />
+              <span>Sign Up</span>
             </Link>
           )}
         </div>
@@ -140,4 +152,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

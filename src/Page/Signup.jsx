@@ -8,34 +8,55 @@ export const Signup = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setusername] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [birthHour, setBirthHour] = useState("");
+  const [birthMinute, setBirthMinute] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
-  const handlLogin = async (e) => {
+  const navigate = useNavigate();
+
+  const handlSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await authServices.Register({ email, password, username });
-      console.log("Login Response:", res.data);
-      alert("Register Successful");
-      navigate('/login')
+      const res = await authServices.Register({
+        email,
+        password,
+        username,
+        birth_year: birthYear,
+        birth_month: birthMonth,
+        birth_day: birthDay,
+        birth_hour: birthHour,
+        birth_minute: birthMinute,
+      });
+      console.log("Signup Response:", res.data);
+      alert("Registration Successful!");
+      navigate("/login");
     } catch (err) {
-      console.error("Login Error:", err);
+      console.error("Signup Error:", err);
       alert(
         err.response?.data?.email ||
         err.response?.data?.detail ||
         err.response?.data?.message ||
-        "Sign Failed"
+        "Signup Failed"
       );
-
     } finally {
       setLoading(false);
     }
   };
 
+  // Generate dropdown options
+  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = Array.from({ length: 60 }, (_, i) => i);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden md:px-4">
-      {/* twinkling stars layer */}
+      {/* Background stars */}
       <div className="absolute inset-0 pointer-events-none">
         <svg className="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -49,19 +70,10 @@ export const Signup = () => {
           <circle className="star animate-twinkle animation-delay-400" cx="70%" cy="10%" r="1.5" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-600" cx="85%" cy="55%" r="1.0" fill="url(#g1)" />
           <circle className="star animate-twinkle animation-delay-800" cx="40%" cy="30%" r="1.4" fill="url(#g1)" />
-          <g className="opacity-70">
-            <line x1="20%" y1="30%" x2="30%" y2="40%" stroke="#8ab4ff66" strokeWidth="0.8" className="animate-line" />
-            <line x1="30%" y1="40%" x2="45%" y2="28%" stroke="#8ab4ff66" strokeWidth="0.8" className="animate-line animation-delay-300" />
-            <line x1="45%" y1="28%" x2="62%" y2="38%" stroke="#8ab4ff66" strokeWidth="0.8" className="animate-line animation-delay-600" />
-            <circle cx="20%" cy="30%" r="1.2" fill="#cfe2ff" />
-            <circle cx="30%" cy="40%" r="1.2" fill="#cfe2ff" />
-            <circle cx="45%" cy="28%" r="1.2" fill="#cfe2ff" />
-            <circle cx="62%" cy="38%" r="1.2" fill="#cfe2ff" />
-          </g>
         </svg>
       </div>
 
-      {/* centered card */}
+      {/* Signup card */}
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -70,48 +82,51 @@ export const Signup = () => {
       >
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center shadow-lg">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 12C5 8 8 6 12 6s7 2 9 6" stroke="#06132f" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M3 12C5 8 8 6 12 6s7 2 9 6" stroke="#06132f" strokeWidth="1.2" strokeLinecap="round" />
               <circle cx="8" cy="13" r="1" fill="#06132f" />
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-white">Astro Sign In</h2>
-            <p className="text-sm text-indigo-200/80">Sign in to discover your daily cosmic hints ✨</p>
+            <h2 className="text-2xl font-semibold text-white">Astro Signup</h2>
+            <p className="text-sm text-indigo-200/80">Register to discover your cosmic vibes ✨</p>
           </div>
         </div>
 
-        {/* Login form */}
-        <form className="space-y-4" onSubmit={handlLogin}>
+        <form className="space-y-4" onSubmit={handlSignup}>
+          {/* Username */}
           <div>
             <label className="text-sm text-indigo-200/70">Name</label>
             <motion.input
               whileFocus={{ scale: 1.01 }}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
+              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 text-white outline-none"
               placeholder="Name"
               required
               value={username}
               onChange={(e) => setusername(e.target.value)}
             />
           </div>
+
+          {/* Email */}
           <div>
             <label className="text-sm text-indigo-200/70">Email</label>
             <motion.input
               whileFocus={{ scale: 1.01 }}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
-              placeholder="You@gmail.com"
+              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 text-white outline-none"
+              placeholder="you@gmail.com"
               required
               value={email}
               onChange={(e) => setemail(e.target.value)}
             />
           </div>
 
+          {/* Password */}
           <div className="relative">
             <label className="text-sm text-indigo-200/70">Password</label>
             <div className="flex items-center">
               <motion.input
                 whileFocus={{ scale: 1.01 }}
-                className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none pr-10"
+                className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 text-white outline-none pr-10"
                 placeholder="Your secret constellation"
                 type={showPassword ? "text" : "password"}
                 required
@@ -127,45 +142,83 @@ export const Signup = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-end text-sm text-indigo-200/70">
-            <a href="#" className="hover:underline">Forgot?</a>
+          {/* 🌙 Birth Details */}
+          <div>
+            <label className="text-sm text-indigo-200/70">Birth Date (YYYY / MM / DD)</label>
+            <div className="flex gap-2 mt-2">
+              <select
+                value={birthYear}
+                onChange={(e) => setBirthYear(e.target.value)}
+                className="flex-1 bg-white/5 border border-indigo-500/20 text-white rounded-lg px-2 py-2"
+                required
+              >
+                <option className="bg-gray-800 text-white" value="">Year</option>
+                {years.map((y) => (
+                  <option className="bg-gray-800 text-white" key={y} value={y}>{y} </option>
+                ))}
+              </select>
+              <select
+                value={birthMonth}
+                onChange={(e) => setBirthMonth(e.target.value)}
+                className="flex-1 bg-white/5 border border-indigo-500/20 text-white rounded-lg px-2 py-2"
+                required
+              >
+                <option className="bg-gray-800 text-white" value="">Month</option>
+                {months.map((m) => (
+                  <option className="bg-gray-800 text-white" key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <select
+                value={birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
+                className="flex-1 bg-white/5 border border-indigo-500/20 text-white rounded-lg px-2 py-2"
+                required
+              >
+                <option className="bg-gray-800 text-white" value="">Day</option>
+                {days.map((d) => (
+                  <option className="bg-gray-800 text-white" key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
+          <div>
+            <label className="text-sm text-indigo-200/70">Birth Time (HH : MM - 24hr format)</label>
+            <div className="flex gap-2 mt-2">
+              <select
+                value={birthHour}
+                onChange={(e) => setBirthHour(e.target.value)}
+                className="flex-1 bg-white/5 border border-indigo-500/20 text-white rounded-lg px-2 py-2"
+                required
+              >
+                <option className="bg-gray-800 text-white" value="">Hour</option>
+                {hours.map((h) => (
+                  <option className="bg-gray-800 text-white" key={h} value={h}>{h.toString().padStart(2, "0")}</option>
+                ))}
+              </select>
+              <select
+                value={birthMinute}
+                onChange={(e) => setBirthMinute(e.target.value)}
+                className="flex-1 bg-white/5 border border-indigo-500/20 text-white rounded-lg px-2 py-2"
+                required
+              >
+                <option className="bg-gray-800 text-white" value="">Minute</option>
+                {minutes.map((m) => (
+                  <option className="bg-gray-800 text-white" key={m} value={m}>{m.toString().padStart(2, "0")}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Submit */}
           <motion.button
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
             className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md"
             type="submit"
           >
-            {loading ? (
-              <div className="flex justify-center items-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
-                Sign in...
-              </div>
-            ) : (
-              "Signup"
-            )}
+            {loading ? "Signing up..." : "Signup"}
           </motion.button>
-
 
           <div className="pt-4 border-t border-indigo-600/20 text-center text-indigo-200/70">
             Already have an account?{" "}
@@ -173,12 +226,8 @@ export const Signup = () => {
               Login
             </Link>
           </div>
-
         </form>
       </motion.div>
-
-      {/* footer constellation glow */}
-      <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[800px] h-[400px] rounded-full bg-gradient-to-r from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none opacity-80"></div>
 
       <style>{`
         .star { filter: drop-shadow(0 0 6px rgba(200,220,255,0.9)); }
@@ -187,17 +236,7 @@ export const Signup = () => {
           50% { opacity: 1; transform: scale(1.12); }
         }
         .animate-twinkle { animation: twinkle 3.6s infinite ease-in-out; }
-        .animation-delay-200 { animation-delay: .2s; }
-        .animation-delay-400 { animation-delay: .4s; }
-        .animation-delay-600 { animation-delay: .6s; }
-        .animation-delay-800 { animation-delay: .8s; }
-
-        @keyframes draw-line {
-          from { stroke-dasharray: 0 200; }
-          to { stroke-dasharray: 200 0; }
-        }
-        .animate-line { stroke-dasharray: 0 200; animation: draw-line 1.4s ease forwards; }
       `}</style>
     </div>
   );
-}
+};

@@ -6,6 +6,7 @@ import astroReducer from "./slices/astroSlice";
 const loadAstroState = () => {
   try {
     // const saved = localStorage.getItem("astroState");
+    const saved = null;
     return saved ? { astro: JSON.parse(saved) } : undefined;
   } catch (e) {
     console.error("Failed to load astro state", e);

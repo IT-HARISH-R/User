@@ -20,8 +20,11 @@ const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     },
+    UpdateUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload }; // merge updated fields
+    },
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, UpdateUser } = authSlice.actions;
 export default authSlice.reducer;
