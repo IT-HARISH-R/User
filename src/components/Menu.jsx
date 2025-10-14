@@ -30,6 +30,9 @@ const Menu = () => {
                 Prediction
               </Link>
             )}
+            <Link to="/audio" className="hover:text-indigo-300 transition-colors">
+              audio
+            </Link>
           </div>
 
           {/* Right Side (Profile / Auth Links) */}

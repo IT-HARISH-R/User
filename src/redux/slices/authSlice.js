@@ -21,7 +21,7 @@ const authSlice = createSlice({
       localStorage.removeItem("refreshToken");
     },
     UpdateUser: (state, action) => {
-      state.user = { ...state.user, ...action.payload }; // merge updated fields
+      state.user = { ...state.user, ...action.payload }; 
     },
   },
 });

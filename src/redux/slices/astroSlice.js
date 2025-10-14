@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  predictions: {},  // store predictions by unique key
-  lastKey: null,    // remember last used prediction key
+  predictions: {},  
+  lastKey: null,    
 };
 
 const astroSlice = createSlice({
@@ -12,7 +12,7 @@ const astroSlice = createSlice({
     cachePrediction: (state, action) => {
       const { key, data } = action.payload;
       state.predictions[key] = data;
-      state.lastKey = key; // store last used prediction key
+      state.lastKey = key;
     },
     clearPredictions: (state) => {
       state.predictions = {};

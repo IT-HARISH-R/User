@@ -29,15 +29,17 @@ const authServices = {
 
     updateProfile: async (data) => {
         try {
-            const res = await api.put("api/auth/profile/update/", data);
-            console.log("Login Response:", res);
+            const res = await api.put("api/auth/profile/update/", data, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            console.log("Profile Update Response:", res);
             return res;
-        }
-        catch (err) {
+        } catch (err) {
             console.error("updateProfile error:", err);
             throw err;
         }
     },
+
 
     // Get Profile api
     getProfile: async () => {

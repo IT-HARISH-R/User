@@ -4,11 +4,12 @@ import Home from './Page/Home';
 import { Login } from './Page/Login';
 import { Signup } from './Page/Signup';
 import Menu from './components/Menu';
-import Profile from './Page/profile';
+import Profile from './Page/Profile';
 import AstroForm from './Page/AstroForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './redux/slices/authSlice';
 import authServices from './server/authServices';
+import AudioRecorder from './components/AudioRecorder';
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/predict" element={<AstroForm />} />
+        <Route path="/audio" element={<AudioRecorder />} />
 
       </Routes>
     </>
