@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from './redux/slices/authSlice';
 import authServices from './server/authServices';
 import AudioRecorder from './components/AudioRecorder';
+import AstroHistory from './Page/AstroHistory';
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/predict" element={<AstroForm />} />
         <Route path="/audio" element={<AudioRecorder />} />
+        <Route path="/history" element={<AstroHistory />} />
 
       </Routes>
     </>

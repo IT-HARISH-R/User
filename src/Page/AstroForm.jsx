@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Zap, Calendar, Clock, Sun, Moon, Key } from "lucide-react";
-import astroServices from "../server/astroServices";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import astroServices from "../server/astroServices";
 import { cachePrediction } from "../redux/slices/astroSlice";
 
 // --- STAR BACKGROUND COMPONENT ---
@@ -38,17 +39,15 @@ const StarBackground = () => {
   return (
     <>
       <style>{starKeyframes}</style>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {stars}
-      </div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">{stars}</div>
     </>
   );
 };
 
 // --- ASTRO FORM COMPONENT ---
 const AstroForm = () => {
-
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cachedPredictions = useSelector((state) => state.astro.predictions);
   const { predictions, lastKey } = useSelector((state) => state.astro);
 
@@ -65,7 +64,7 @@ const AstroForm = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
 
-  // 👇 restore last prediction when component mounts
+  // 👇 Restore last prediction on mount
   React.useEffect(() => {
     if (lastKey && predictions[lastKey]) {
       console.log("✨ Restored last prediction from Redux memory");
@@ -79,12 +78,10 @@ const AstroForm = () => {
 
   const handleChange = (e) => {
     let { name, value } = e.target;
-
     if (name === "month" && value > 12) value = "12";
     if (name === "day" && value > 31) value = "31";
     if (name === "hour" && value > 23) value = "23";
     if (name === "minute" && value > 59) value = "59";
-
     setFormData({ ...formData, [name]: value });
   };
 
@@ -134,6 +131,16 @@ const AstroForm = () => {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-2xl bg-black/70 p-8 sm:p-10 rounded-2xl border border-indigo-600/50 shadow-[0_0_60px_rgba(99,102,241,0.2)] backdrop-blur-lg text-white"
       >
+        {/* --- History Button Top Right --- */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => navigate("/history")}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md transition"
+          >
+             History
+          </button>
+        </div>
+
         <h2 className="text-3xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 flex items-center justify-center space-x-3">
           <Zap className="w-7 h-7" />
           <span>Cosmic Prediction Engine</span>

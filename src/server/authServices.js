@@ -55,6 +55,7 @@ const authServices = {
 
             //     headers: { Authorization: `Bearer ${token}` },
             // });
+            console.log("Get Profile Response:", res);
             return res;
         } catch (err) {
             console.error("Get Profile error:", err);
