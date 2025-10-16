@@ -29,13 +29,17 @@ const authServices = {
 
     updateProfile: async (data) => {
         try {
+            const token = localStorage.getItem("accessToken");
             const res = await api.put("api/auth/profile/update/", data, {
-                headers: { "Content-Type": "multipart/form-data" }
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
             });
             console.log("Profile Update Response:", res);
             return res;
         } catch (err) {
-            console.error("updateProfile error:", err);
+            console.error("updateProfile error:", err.response?.data || err);
             throw err;
         }
     },
