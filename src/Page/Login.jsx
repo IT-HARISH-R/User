@@ -5,6 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slices/authSlice";
+import Loading from "../components/Loading";
 
 export const Login = () => {
   const [email, setemail] = useState("");
@@ -39,8 +40,7 @@ export const Login = () => {
       setLoading(false);
     }
   };
-
-
+  if (loading) return <Loading text="Logging in..." />
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden md:px-4">
       {/* twinkling stars layer */}

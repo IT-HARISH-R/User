@@ -11,6 +11,9 @@ import { login } from './redux/slices/authSlice';
 import authServices from './server/authServices';
 import AudioRecorder from './components/AudioRecorder';
 import AstroHistory from './Page/AstroHistory';
+import Plans from './Page/Plans';
+import AdminPlans from './Page/AdminPlans';
+import { StarBackground } from './components/StarBackground';
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -49,8 +52,12 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/predict" element={<AstroForm />} />
-        <Route path="/audio" element={<AudioRecorder />} />
+        {/* <Route path="/audio" element={<AudioRecorder />} /> */}
         <Route path="/history" element={<AstroHistory />} />
+        <Route path="/plans" element={<Plans />} />
+        <Route path="/admin/plans" element={<AdminPlans />} />
+
+
 
       </Routes>
     </>

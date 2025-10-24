@@ -5,76 +5,16 @@ import { LuInfo, LuStar, LuUser, LuSparkles, LuUserPlus } from "react-icons/lu";
 import authServices from "../server/authServices";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/slices/authSlice";
+import { StarBackground } from "../components/StarBackground";
 
-// 🌌 STAR BACKGROUND COMPONENT
-const StarBackground = () => {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-
-        // 🔹 Condition check
-        if (!user && token) {
-          const profileRes = await authServices.getProfile();
-          console.log("Profile Data:", profileRes.data);
-
-          dispatch(login(profileRes.data));
-        } else {
-          console.log("🪐 Skipped fetching — user exists or token missing");
-        }
-      } catch (err) {
-        console.error("❌ Failed to load profile:", err);
-      }
-    };
-
-    fetchProfile();
-  }, [dispatch, user]);
-
-  // ✨ Star animation setup
-  const stars = [];
-  for (let i = 0; i < 150; i++) {
-    const style = {
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      width: `${Math.random() * 2 + 0.5}px`,
-      height: `${Math.random() * 2 + 0.5}px`,
-      animationDelay: `${Math.random() * 5}s`,
-    };
-    stars.push(
-      <div
-        key={i}
-        className="absolute rounded-full bg-white opacity-0 animate-twinkle"
-        style={style}
-      />
-    );
-  }
-
-  return (
-    <>
-      <style>
-        {`
-          @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.2); }
-          }
-        `}
-      </style>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {stars}
-      </div>
-    </>
-  );
-};
 
 // 🌠 HOME PAGE COMPONENT
 const HomePage = () => {
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className="min-h-screen flex justify-center items-center relative overflow-hidden bg-gradient-to-b from-gray-900 via-indigo-900 to-black">
+    <div className="min-h-screen flex justify-center items-center relative overflow-hidden bg-gradient-to-b from-gray-900 via-indigo-950 to-black text-white">
       <StarBackground />
 
       <motion.div
