@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { Routes, Route, Router } from "react-router-dom";
+import React, { useEffect } from 'react';
+import { Routes, Route } from "react-router-dom";
 import Home from './Page/Home';
 import { Login } from './Page/Login';
 import { Signup } from './Page/Signup';
@@ -9,11 +9,14 @@ import AstroForm from './Page/AstroForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './redux/slices/authSlice';
 import authServices from './server/authServices';
-import AudioRecorder from './components/AudioRecorder';
 import AstroHistory from './Page/AstroHistory';
 import Plans from './Page/Plans';
 import AdminPlans from './Page/AdminPlans';
-import { StarBackground } from './components/StarBackground';
+import Dashboard from './Page/Dashboard';
+import Users from './components/Dashboard/Users';
+// import SettingsForm from './components/Dashboard/SettingsForm';
+import Layout from './components/Layout';
+
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -23,11 +26,9 @@ const App = () => {
       try {
         const token = localStorage.getItem("accessToken");
 
-        // 🔹 Condition check
         if (!user && token) {
           const profileRes = await authServices.getProfile();
           console.log("Profile Data:", profileRes.data);
-
           dispatch(login(profileRes.data));
         } else {
           console.log("🪐 Skipped fetching — user exists or token missing");
@@ -39,30 +40,56 @@ const App = () => {
 
     fetchProfile();
   }, [dispatch, user]);
-  
 
   return (
-
     <>
-
       <Menu />
       <Routes>
+        {/* 🌟 Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={ <Layout><Profile /></Layout>} />
         <Route path="/predict" element={<AstroForm />} />
-        {/* <Route path="/audio" element={<AudioRecorder />} /> */}
         <Route path="/history" element={<AstroHistory />} />
         <Route path="/plans" element={<Plans />} />
-        <Route path="/admin/plans" element={<AdminPlans />} />
 
-
-
+        {/* 🌟 Admin Routes (All wrapped inside Layout) */}
+        <Route
+          path="/admin"
+          element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <Layout>
+              <Users />
+            </Layout>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <Layout>
+              {/* <SettingsForm /> */}
+            </Layout>
+          }
+        />
+        <Route
+          path="/admin/plans"
+          element={
+            <Layout>
+              <AdminPlans />
+            </Layout>
+          }
+        />
       </Routes>
     </>
+  );
+};
 
-  )
-}
-
-export default App
+export default App;

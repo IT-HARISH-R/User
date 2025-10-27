@@ -14,12 +14,13 @@ const Menu = () => {
     { to: "/plans", label: "Plans" },
     user && { to: "/predict", label: "Prediction" },
     user?.role === "admin" && { to: "/admin/plans", label: "Admin Plans" },
-    { to: "/audio", label: "Audio" },
+    // user?.role === "admin" && { to: "/admin", label: "Admin " },
+    // { to: "/audio", label: "Audio" },
   ].filter(Boolean);
 
   // Auth links
   const authLinks = user
-    ? [{ to: "/profile", label: "Profile" }]
+    ? [ user?.role === "admin" ?{ to: "/admin", label: "Dashboard " }:{ to: "/profile", label: "Profile" }]
     : [
         { to: "/login", label: "Login" },
         { to: "/signup", label: "Sign Up" },

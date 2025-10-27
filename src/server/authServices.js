@@ -62,6 +62,23 @@ const authServices = {
             throw err;
         }
     },
+
+    getAllUser: async () => {
+        try {
+            const token = localStorage.getItem("accessToken")
+            // console.log("tok", tok)
+            const res = await api.get(`api/auth/users/`)
+            //     , {
+
+            //     headers: { Authorization: `Bearer ${token}` },
+            // });
+            console.log("Get Profile Response:", res);
+            return res;
+        } catch (err) {
+            console.error("Get Profile error:", err);
+            throw err;
+        }
+    },
 };
 
 export default authServices;

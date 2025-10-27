@@ -25,16 +25,16 @@ export const StarBackground = ({ starCount = 100 }) => {
     stars.push(<Star key={i} style={style} />);
   }
 
-  const starKeyframes = "l"
-  // const starKeyframes = `
-  //   @keyframes twinkle {
-  //     0%, 100% { opacity: 0.2; transform: scale(0.5); }
-  //     50% { opacity: 1; transform: scale(1.2); }
-  //   }
-  //   .star-twinkle {
-  //     animation: twinkle infinite alternate ease-in-out;
-  //   }
-  // `;
+  // const starKeyframes = "l"
+  const starKeyframes = `
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    .star-twinkle {
+      animation: twinkle infinite alternate ease-in-out;
+    }
+  `;
 
   return (
     <>
