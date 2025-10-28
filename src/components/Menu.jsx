@@ -8,36 +8,35 @@ const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  // Main links
-  const links = [
+  // Navigation links (dynamic based on user)
+  const mainLinks = [
     { to: "/", label: "Home" },
     { to: "/plans", label: "Plans" },
     user && { to: "/predict", label: "Prediction" },
-    user?.role === "admin" && { to: "/admin/plans", label: "Admin Plans" },
-    // user?.role === "admin" && { to: "/admin", label: "Admin " },
-    // { to: "/audio", label: "Audio" },
   ].filter(Boolean);
 
-  // Auth links
   const authLinks = user
-    ? [ user?.role === "admin" ?{ to: "/admin", label: "Dashboard " }:{ to: "/profile", label: "Profile" }]
+    ? [
+        user?.role === "admin"
+          ? { to: "/admin", label: "Dashboard" }
+          : { to: "/profile", label: "Profile" },
+      ]
     : [
         { to: "/login", label: "Login" },
         { to: "/signup", label: "Sign Up" },
       ];
 
-  // Link rendering
+  // Reusable link renderer
   const renderLink = (link) => {
     const isActive = location.pathname === link.to;
-
     return (
       <Link
         key={link.to}
         to={link.to}
-        className={`
-          relative px-4 py-2 rounded-lg font-medium transition-all duration-300
-          hover:bg-indigo-700 hover:scale-105 hover:text-white
-          ${isActive ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/50" : "text-gray-200"}
+        className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300
+          ${isActive
+            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/50 scale-105"
+            : "text-gray-200 hover:bg-indigo-700 hover:text-white hover:scale-105"}
         `}
         onClick={() => setIsOpen(false)}
       >
@@ -52,8 +51,8 @@ const Menu = () => {
   return (
     <nav className="fixed w-full z-50 bg-gradient-to-r from-indigo-800 via-purple-800 to-indigo-900 text-white shadow-lg backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top bar */}
-        <div className="flex justify-between h-16 items-center">
+        {/* Navbar container */}
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link
@@ -64,23 +63,24 @@ const Menu = () => {
             </Link>
           </div>
 
-          {/* Hamburger button (mobile) */}
-          <div className="flex lg:hidden">
+          {/* Hamburger (mobile) */}
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white hover:text-indigo-300 focus:outline-none"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X size={26} /> : <MenuIcon size={26} />}
             </button>
           </div>
 
-          {/* Menu links (desktop) */}
-          <div className="hidden lg:flex flex-1 justify-center space-x-4 items-center">
-            {links.map(renderLink)}
+          {/* Desktop links */}
+          <div className="hidden lg:flex flex-1 justify-center items-center space-x-4">
+            {mainLinks.map(renderLink)}
           </div>
 
-          {/* Auth/Profile links (desktop) */}
-          <div className="hidden lg:flex space-x-4 items-center">
+          {/* Desktop auth/profile links */}
+          <div className="hidden lg:flex items-center space-x-4">
             {authLinks.map(renderLink)}
           </div>
         </div>
@@ -88,12 +88,12 @@ const Menu = () => {
 
       {/* Mobile dropdown menu */}
       <div
-        className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-screen" : "max-h-0"
+        className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="bg-indigo-900/95 backdrop-blur-sm border-t border-indigo-700 px-4 py-4 flex flex-col gap-3">
-          {links.map(renderLink)}
+          {mainLinks.map(renderLink)}
           <div className="border-t border-indigo-700 pt-3 flex flex-col gap-2">
             {authLinks.map(renderLink)}
           </div>

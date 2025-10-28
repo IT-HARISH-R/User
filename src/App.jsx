@@ -11,7 +11,7 @@ import { login } from './redux/slices/authSlice';
 import authServices from './server/authServices';
 import AstroHistory from './Page/AstroHistory';
 import Plans from './Page/Plans';
-import AdminPlans from './Page/AdminPlans';
+// import AdminPlans from './components/AdminPlans';
 import Dashboard from './Page/Dashboard';
 import Users from './components/Dashboard/Users';
 // import SettingsForm from './components/Dashboard/SettingsForm';
@@ -30,9 +30,7 @@ const App = () => {
           const profileRes = await authServices.getProfile();
           console.log("Profile Data:", profileRes.data);
           dispatch(login(profileRes.data));
-        } else {
-          console.log("🪐 Skipped fetching — user exists or token missing");
-        }
+        } 
       } catch (err) {
         console.error("❌ Failed to load profile:", err);
       }
@@ -49,44 +47,14 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={ <Layout><Profile /></Layout>} />
+        <Route path="/profile" element={<Layout><Profile /></Layout>} />
         <Route path="/predict" element={<AstroForm />} />
         <Route path="/history" element={<AstroHistory />} />
         <Route path="/plans" element={<Plans />} />
 
         {/* 🌟 Admin Routes (All wrapped inside Layout) */}
-        <Route
-          path="/admin"
-          element={
-            <Layout>
-              <Dashboard />
-            </Layout>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <Layout>
-              <Users />
-            </Layout>
-          }
-        />
-        <Route
-          path="/admin/settings"
-          element={
-            <Layout>
-              {/* <SettingsForm /> */}
-            </Layout>
-          }
-        />
-        <Route
-          path="/admin/plans"
-          element={
-            <Layout>
-              <AdminPlans />
-            </Layout>
-          }
-        />
+        <Route path="/admin" element={<Layout> <Dashboard /> </Layout>} />
+
       </Routes>
     </>
   );

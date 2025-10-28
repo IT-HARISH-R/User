@@ -48,13 +48,7 @@ const authServices = {
     // Get Profile api
     getProfile: async () => {
         try {
-            const token = localStorage.getItem("accessToken")
-            // console.log("tok", tok)
             const res = await api.get(`api/auth/profile/`)
-            //     , {
-
-            //     headers: { Authorization: `Bearer ${token}` },
-            // });
             console.log("Get Profile Response:", res);
             return res;
         } catch (err) {
