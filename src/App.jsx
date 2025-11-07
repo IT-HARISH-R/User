@@ -16,6 +16,7 @@ import Dashboard from './Page/Dashboard';
 import Users from './components/Dashboard/Users';
 // import SettingsForm from './components/Dashboard/SettingsForm';
 import Layout from './components/Layout';
+import TodayPredictions from './components/TodayPredictions';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ const App = () => {
           const profileRes = await authServices.getProfile();
           console.log("Profile Data:", profileRes.data);
           dispatch(login(profileRes.data));
-        } 
+        }
       } catch (err) {
         console.error("❌ Failed to load profile:", err);
       }
@@ -51,6 +52,8 @@ const App = () => {
         <Route path="/predict" element={<AstroForm />} />
         <Route path="/history" element={<AstroHistory />} />
         <Route path="/plans" element={<Plans />} />
+
+        <Route path="/today" element={<Layout><TodayPredictions /></Layout>} />
 
         {/* 🌟 Admin Routes (All wrapped inside Layout) */}
         <Route path="/admin" element={<Layout> <Dashboard /> </Layout>} />

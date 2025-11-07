@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import astroReducer from "./slices/astroSlice";
+import zodiacReducer from "./slices/zodiacSlice";
 
 // 🔹 Load only astrology state from localStorage
 const loadAstroState = () => {
@@ -28,6 +29,8 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     astro: astroReducer,
+    zodiac: zodiacReducer,
+
   },
   preloadedState: loadAstroState(),
 });

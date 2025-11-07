@@ -13,6 +13,7 @@ const Menu = () => {
     { to: "/", label: "Home" },
     { to: "/plans", label: "Plans" },
     user && { to: "/predict", label: "Prediction" },
+    user && { to: "/today", label: "Today" },
   ].filter(Boolean);
 
   const authLinks = user

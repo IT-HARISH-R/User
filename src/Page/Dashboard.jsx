@@ -4,11 +4,15 @@ import { BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import Mailbord from '../components/Dashboard/Mailbord';
 import Users from '../components/Dashboard/Users';
 import AdminPlans from '../components/Dashboard/AdminPlans';
+import { useSelector } from 'react-redux';
+import { Link } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('Dashboard'); // Default active section
-
+  const user = useSelector((state) => state.auth.user)
+  const navigate = useNavigate()
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
@@ -47,10 +51,15 @@ const Dashboard = () => {
             </h2>
             <div className="flex items-center space-x-4">
               <BellIcon className="h-6 w-6 text-gray-500 dark:text-gray-300 cursor-pointer" />
-              <div className="flex items-center space-x-2">
-                <UserCircleIcon className="h-8 w-8 text-gray-500 dark:text-gray-300" />
-                <span className="text-gray-700 dark:text-gray-200 font-medium">John Doe</span>
-              </div>
+              <button onClick={() => navigate('/profile')}
+                className="bg-indigo-600 text-white px-4 py-2  hover:bg-indigo-700 transition rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <UserCircleIcon className="h-8 w-8 text-gray-500 dark:text-gray-300 cursor-pointer" />
+                  <span className="text-gray-700 dark:text-gray-200 font-medium cursor-pointer">
+                    {user.username}
+                  </span>
+                </div>
+              </button>
             </div>
           </div>
         </header>
