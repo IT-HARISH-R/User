@@ -17,6 +17,7 @@ import Users from './components/Dashboard/Users';
 // import SettingsForm from './components/Dashboard/SettingsForm';
 import Layout from './components/Layout';
 import TodayPredictions from './components/TodayPredictions';
+import ZodiacDetailPage from './components/Home/ZodiacDetailPage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,9 @@ const App = () => {
       <Menu />
       <Routes>
         {/* 🌟 Public Routes */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Layout><Home /></Layout>} />
+        <Route path="/horoscope/:sign" element={<Layout><ZodiacDetailPage /></Layout>} />
+       
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Layout><Profile /></Layout>} />
