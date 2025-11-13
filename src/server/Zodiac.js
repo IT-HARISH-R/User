@@ -1,6 +1,6 @@
 import api from "./axios";
 
-const today = {
+const Zodiac = {
 
   todatZodiac: async () => {
     try {
@@ -13,7 +13,17 @@ const today = {
     }
   },
 
+  LoveMatch: async (data) => {
+    try {
+      const res = await api.post("zodiac/love/",data);
+      console.log("get love ", res)
+      return res;
+    } catch (err) {
+      console.error("Error fetching love:", err);
+      throw err;
+    }
+  },
 
 };
 
-export default today;
+export default Zodiac;

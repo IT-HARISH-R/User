@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import today from "../../server/today"; // adjust path if needed
+import Zodiac from "../../server/Zodiac"; // adjust path if needed
 // import TodayPredictions from "../../components/TodayPredictions";
 
 // ✅ Async thunk to fetch daily predictions
@@ -7,7 +7,7 @@ export const fetchPredictions = createAsyncThunk(
   "zodiac/fetchPredictions",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await today.todatZodiac();
+      const res = await Zodiac.todatZodiac();
       return res.data; // { date, predictions }
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

@@ -8,34 +8,34 @@ import { fetchPredictions } from "../../redux/slices/zodiacSlice";
 
 // 🌟 High-quality zodiac images from reliable sources
 const zodiacImages = {
-  aries: "https://tse1.mm.bing.net/th/id/OIP.oeSjmPTQRMZ_MzxXwTcC2wHaD5?pid=Api&P=0&h=180",
-  taurus: "https://getwallpapers.com/wallpaper/full/3/4/8/1178193-new-taurus-zodiac-sign-wallpaper-1920x1080-for-samsung.jpg",
-  gemini: "https://tse4.mm.bing.net/th/id/OIP.wQwUEyiScIntrLXW1mPErgHaE8?pid=Api&P=0&h=180",
-  cancer: "https://tse3.mm.bing.net/th/id/OIP.rDGiOoJjZQS1VrzlxoqUKgHaD5?pid=Api&P=0&w=300&h=300",
-  leo: "https://tse2.mm.bing.net/th/id/OIP.kJzJQTa9iSwY-RGzY1oGZwHaE8?pid=Api&P=0&h=180",
-  virgo: "https://tse4.mm.bing.net/th/id/OIP.ihn4k9ZYMKmmWo_7KxxOvwHaE8?pid=Api&P=0&h=180",
-  libra: "https://img.freepik.com/premium-photo/libra-zodiac-sign-horoscope-astrology_297535-4854.jpg",
-  scorpio: "https://tse1.mm.bing.net/th/id/OIP.N9nCrEL3p4HXZlZhE8j84AHaE8?pid=Api&P=0&h=180",
-  sagittarius: "https://tse1.mm.bing.net/th/id/OIP.hKvu9YfbhKjR6IBlnOVHdgHaD5?pid=Api&P=0&h=180",
-  capricorn: "https://tse2.mm.bing.net/th/id/OIP.Y2mO2uKMlrL1cpPQhNDv-AHaD5?pid=Api&P=0&h=180",
-  aquarius: "https://tse4.mm.bing.net/th/id/OIP.KvyRlOZ_lt3BeDd5q8cJyQHaD5?pid=Api&P=0&h=180",
-  pisces: "https://tse2.mm.bing.net/th/id/OIP.W6SRFqJm4Bq7jtVZUB5aigHaD5?pid=Api&P=0&h=180"
+    aries: "https://tse1.mm.bing.net/th/id/OIP.oeSjmPTQRMZ_MzxXwTcC2wHaD5?pid=Api&P=0&h=180",
+    taurus: "https://getwallpapers.com/wallpaper/full/3/4/8/1178193-new-taurus-zodiac-sign-wallpaper-1920x1080-for-samsung.jpg",
+    gemini: "https://tse4.mm.bing.net/th/id/OIP.wQwUEyiScIntrLXW1mPErgHaE8?pid=Api&P=0&h=180",
+    cancer: "https://tse3.mm.bing.net/th/id/OIP.rDGiOoJjZQS1VrzlxoqUKgHaD5?pid=Api&P=0&w=300&h=300",
+    leo: "https://tse2.mm.bing.net/th/id/OIP.kJzJQTa9iSwY-RGzY1oGZwHaE8?pid=Api&P=0&h=180",
+    virgo: "https://tse4.mm.bing.net/th/id/OIP.ihn4k9ZYMKmmWo_7KxxOvwHaE8?pid=Api&P=0&h=180",
+    libra: "https://img.freepik.com/premium-photo/libra-zodiac-sign-horoscope-astrology_297535-4854.jpg",
+    scorpio: "https://tse1.mm.bing.net/th/id/OIP.N9nCrEL3p4HXZlZhE8j84AHaE8?pid=Api&P=0&h=180",
+    sagittarius: "https://tse1.mm.bing.net/th/id/OIP.hKvu9YfbhKjR6IBlnOVHdgHaD5?pid=Api&P=0&h=180",
+    capricorn: "https://tse2.mm.bing.net/th/id/OIP.Y2mO2uKMlrL1cpPQhNDv-AHaD5?pid=Api&P=0&h=180",
+    aquarius: "https://tse4.mm.bing.net/th/id/OIP.KvyRlOZ_lt3BeDd5q8cJyQHaD5?pid=Api&P=0&h=180",
+    pisces: "https://tse2.mm.bing.net/th/id/OIP.W6SRFqJm4Bq7jtVZUB5aigHaD5?pid=Api&P=0&h=180"
 };
 
 // Zodiac icon images (for the symbol display)
 const zodiacIcons = {
-  aries: "https://images.astroyogi.com/strapicmsprod/assets/ARIES_04bdeca59e.svg",
-  taurus: "https://images.astroyogi.com/strapicmsprod/assets/TAURUS_198b4c97e9.svg",
-  gemini: "https://images.astroyogi.com/strapicmsprod/assets/GEMINI_9d35540bb9.svg",
-  cancer: "https://images.astroyogi.com/strapicmsprod/assets/CANCER_364708b894.svg",
-  leo: "https://images.astroyogi.com/strapicmsprod/assets/LEO_593adbf0e7.svg",
-  virgo: "https://images.astroyogi.com/strapicmsprod/assets/VIRGO_fb766f0d08.svg",
-  libra: "https://images.astroyogi.com/strapicmsprod/assets/LIBRA_c60a49cefb.svg",
-  scorpio: "https://images.astroyogi.com/strapicmsprod/assets/SCORPIO_e6bde48051.svg",
-  sagittarius: "https://images.astroyogi.com/strapicmsprod/assets/SAGITTARIUS_e0ed1cd1fd.svg",
-  capricorn: "https://images.astroyogi.com/strapicmsprod/assets/CAPRICORN_ab2706bf23.svg",
-  aquarius: "https://images.astroyogi.com/strapicmsprod/assets/AQUARIUS_4ad6eab3c3.svg",
-  pisces: "https://images.astroyogi.com/strapicmsprod/assets/PISCES_4991a00d62.svg",
+    aries: "https://images.astroyogi.com/strapicmsprod/assets/ARIES_04bdeca59e.svg",
+    taurus: "https://images.astroyogi.com/strapicmsprod/assets/TAURUS_198b4c97e9.svg",
+    gemini: "https://images.astroyogi.com/strapicmsprod/assets/GEMINI_9d35540bb9.svg",
+    cancer: "https://images.astroyogi.com/strapicmsprod/assets/CANCER_364708b894.svg",
+    leo: "https://images.astroyogi.com/strapicmsprod/assets/LEO_593adbf0e7.svg",
+    virgo: "https://images.astroyogi.com/strapicmsprod/assets/VIRGO_fb766f0d08.svg",
+    libra: "https://images.astroyogi.com/strapicmsprod/assets/LIBRA_c60a49cefb.svg",
+    scorpio: "https://images.astroyogi.com/strapicmsprod/assets/SCORPIO_e6bde48051.svg",
+    sagittarius: "https://images.astroyogi.com/strapicmsprod/assets/SAGITTARIUS_e0ed1cd1fd.svg",
+    capricorn: "https://images.astroyogi.com/strapicmsprod/assets/CAPRICORN_ab2706bf23.svg",
+    aquarius: "https://images.astroyogi.com/strapicmsprod/assets/AQUARIUS_4ad6eab3c3.svg",
+    pisces: "https://images.astroyogi.com/strapicmsprod/assets/PISCES_4991a00d62.svg",
 };
 
 const ZodiacDetailPage = () => {
@@ -45,6 +45,11 @@ const ZodiacDetailPage = () => {
     const { date, predictions, loading, error } = useSelector(
         (state) => state.zodiac
     );
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, []);
+
 
     useEffect(() => {
         dispatch(fetchPredictions());
@@ -115,7 +120,7 @@ const ZodiacDetailPage = () => {
                     to="/"
                     className="absolute top-6 left-6 flex items-center text-gray-300 hover:text-purple-400 transition group"
                 >
-                    <LuArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" /> 
+                    <LuArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" />
                     Today's Zodiac
                 </Link>
 
@@ -149,7 +154,7 @@ const ZodiacDetailPage = () => {
                         alt={zodiacData.sign}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    
+
                     {/* Zodiac Symbol Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                         <img
@@ -172,7 +177,7 @@ const ZodiacDetailPage = () => {
                         <LuMoon className="text-blue-300 animate-pulse delay-75" />
                         <LuStar className="text-purple-300 animate-pulse delay-150" />
                     </div>
-                    
+
                     <div className="text-center mb-6">
                         <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300 mb-2">
                             Today's Cosmic Guidance

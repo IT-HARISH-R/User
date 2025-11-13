@@ -26,7 +26,7 @@ export const Login = () => {
       localStorage.setItem("refreshToken", res.data.refresh);
 
 
-      alert("Login Success");
+      // alert("Login Success");
       navigate("/")
 
       const profileRes = await authServices.getProfile();
@@ -35,7 +35,7 @@ export const Login = () => {
       dispatch(login(profileRes.data));
     } catch (err) {
       console.error("Login Error:", err);
-      alert(err.response.data.detail || "Login failed");
+      // alert(err.response.data.detail || "Login failed");
     } finally {
       setLoading(false);
     }
