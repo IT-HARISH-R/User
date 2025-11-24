@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { LuArrowLeft, LuSun, LuMoon, LuStar, LuCalendar } from "react-icons/lu";
@@ -41,6 +41,7 @@ const zodiacIcons = {
 const ZodiacDetailPage = () => {
     const { sign } = useParams();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { date, predictions, loading, error } = useSelector(
         (state) => state.zodiac
@@ -116,13 +117,13 @@ const ZodiacDetailPage = () => {
                 className="relative z-10 w-full max-w-4xl p-8 md:p-12 rounded-3xl border border-purple-400/40 bg-black/60 backdrop-blur-md text-center shadow-[0_0_80px_rgba(192,132,252,0.4)]"
             >
                 {/* 🔙 Back Button */}
-                <Link
-                    to="/"
+                <button
+                    onClick={() => navigate(-1)}
                     className="absolute top-6 left-6 flex items-center text-gray-300 hover:text-purple-400 transition group"
                 >
                     <LuArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Today's Zodiac
-                </Link>
+                    Go Back
+                </button>
 
                 {/* 📅 Today's Date Badge */}
                 <div className="absolute top-6 right-6 flex items-center bg-gradient-to-r from-purple-600/40 to-pink-600/40 border border-purple-400/30 rounded-xl px-4 py-2">

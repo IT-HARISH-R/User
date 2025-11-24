@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LuUser, LuSparkles, LuUserPlus, LuStar, LuChartBar, LuZap } from "react-icons/lu";
@@ -7,12 +7,22 @@ import { StarBackground } from "../components/StarBackground";
 import ZodiacList from "../components/Home/ZodiacList";
 import HeroSlider from "../components/Home/HeroSlider";
 import LoveCalculator from "../components/Home/LoveCalculator";
-import Footer from "../components/Home/Footer"; // Import the Footer
+import Footer from "../components/Home/Footer";
 
 const HomePage = () => {
   const user = useSelector((state) => state.auth.user);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
-  // Floating animation variants
+  // Check if animations have already played
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasAnimated(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Floating animation variants - always animate
   const floatingAnimation = {
     animate: {
       y: [0, -15, 0],
@@ -24,16 +34,59 @@ const HomePage = () => {
     }
   };
 
+  // Page animation variants - only animate once
+  const pageVariants = {
+    initial: hasAnimated ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.98 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: hasAnimated ? 0 : 0.8,
+        ease: [0.25, 0.1, 0.25, 1]
+      }
+    }
+  };
+
+  // Content animation variants - only animate once
+  const containerVariants = {
+    hidden: hasAnimated ? { opacity: 1 } : { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: hasAnimated ? 0 : 0.1,
+        delayChildren: hasAnimated ? 0 : 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: hasAnimated ? 0 : 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <>
-      <div className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={pageVariants}
+        className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white"
+      >
         {/* Enhanced Star Background with Nebula Effect */}
         <StarBackground />
 
         {/* Nebula Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/10 pointer-events-none" />
 
-        {/* Floating Planets Decorations */}
+        {/* Floating Planets Decorations - Always animate */}
         <motion.div
           variants={floatingAnimation}
           animate="animate"
@@ -51,17 +104,21 @@ const HomePage = () => {
         />
 
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
           className="relative z-10 w-full max-w-7xl px-4 sm:px-6 py-8 sm:py-12 text-center flex-grow"
         >
           {/* 🌟 Main Header */}
-          <div className="space-y-6 mb-12 sm:mb-16">
+          <motion.div variants={itemVariants} className="space-y-6 mb-12 sm:mb-16">
             <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
+              initial={hasAnimated ? { scale: 1, opacity: 1 } : { scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
+              transition={{
+                duration: hasAnimated ? 0 : 0.8,
+                type: "spring",
+                stiffness: 100
+              }}
               className="flex justify-center mb-4"
             >
               <div className="relative">
@@ -77,29 +134,27 @@ const HomePage = () => {
             </h1>
 
             <motion.p
-              initial={{ opacity: 0 }}
+              initial={hasAnimated ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
+              transition={{
+                delay: hasAnimated ? 0 : 0.5,
+                duration: hasAnimated ? 0 : 0.8
+              }}
               className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light"
             >
               Discover your cosmic blueprint with{" "}
               <span className="text-cyan-300 font-semibold">AI-powered Vedic astrology</span>{" "}
               and personalized celestial guidance
             </motion.p>
-          </div>
+          </motion.div>
 
           {/* 🎠 Hero Slider */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className="mb-16 sm:mb-20"
-          >
+          <motion.div variants={itemVariants} className="mb-16 sm:mb-20">
             <HeroSlider />
           </motion.div>
 
           {/* ✨ Feature Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-20">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-20">
             {[
               { icon: LuChartBar, title: "Birth Chart Analysis", desc: "Detailed planetary positions", color: "from-blue-500 to-cyan-500" },
               { icon: LuZap, title: "Daily Insights", desc: "Personalized horoscopes", color: "from-purple-500 to-pink-500" },
@@ -107,9 +162,12 @@ const HomePage = () => {
             ].map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + index * 0.1, duration: 0.6 }}
+                transition={{
+                  delay: hasAnimated ? 0 : 0.9 + index * 0.1,
+                  duration: hasAnimated ? 0 : 0.6
+                }}
                 whileHover={{
                   scale: 1.05,
                   y: -5,
@@ -124,25 +182,15 @@ const HomePage = () => {
                 <p className="text-gray-400 text-sm sm:text-base">{feature.desc}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* 🔯 Zodiac Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.6 }}
-            className="my-12 sm:my-16"
-          >
+          <motion.div variants={itemVariants} className="my-12 sm:my-16">
             <ZodiacList />
           </motion.div>
 
           {/* 🪄 CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.7, duration: 0.6 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mt-12 sm:mt-16 mb-10"
-          >
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mt-12 sm:mt-16 mb-10">
             {user ? (
               <>
                 <Link
@@ -174,21 +222,21 @@ const HomePage = () => {
 
           {/* 💖 Love Calculator */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={hasAnimated ? { opacity: 1 } : { opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: hasAnimated ? 0 : 0.8, delay: hasAnimated ? 0 : 0.3 }}
             className="w-full my-16 sm:my-20"
           >
             <LoveCalculator />
           </motion.div>
 
           {/* 🌠 Astro Info Cards */}
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-10 mb-20 px-4">
+          <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-6 sm:gap-10 mb-20 px-4">
             {/* 🪐 Vedic Astrology Card */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: hasAnimated ? 0 : 0.8, delay: hasAnimated ? 0 : 0.3 }}
               whileHover={{ scale: 1.03 }}
               className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-blue-500/10 to-purple-500/10 border border-blue-400/20 shadow-[0_0_25px_rgba(59,130,246,0.15)] backdrop-blur-2xl overflow-hidden"
             >
@@ -206,9 +254,9 @@ const HomePage = () => {
 
             {/* ✨ Cosmic Predictions Card */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: hasAnimated ? 0 : 0.8, delay: hasAnimated ? 0 : 0.5 }}
               whileHover={{ scale: 1.03 }}
               className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-violet-500/10 border border-pink-400/20 shadow-[0_0_25px_rgba(236,72,153,0.15)] backdrop-blur-2xl overflow-hidden"
             >
@@ -223,11 +271,11 @@ const HomePage = () => {
                 powered by AI-enhanced accuracy.
               </p>
             </motion.div>
-          </div>
+          </motion.div>
         </motion.div>
 
-      </div>
-      {/* Footer Component */}
+        {/* Footer Component */}
+      </motion.div>
       <Footer />
     </>
   );

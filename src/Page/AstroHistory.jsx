@@ -7,7 +7,7 @@ import { StarBackground } from "../components/StarBackground";
 const AstroHistory = () => {
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
-
+  console.log(user)
   // Format ISO date string to professional format
   const formatCreatedAt = (isoString) => {
     const date = new Date(isoString);
@@ -74,6 +74,19 @@ const AstroHistory = () => {
                       </p>
                       <p className="text-gray-300 font-mono text-sm">
                         {`Time: ${String(data.birth_hour).padStart(2, "0")}:${String(data.birth_minute).padStart(2, "0")} (24-hour format)`}
+
+                      </p>
+                      <p className="text-gray-300 font-mono text-sm">
+                        {`julian_day: ${String(data.julian_day)}`}
+
+                      </p>
+                      <p className="text-gray-300 font-mono text-sm">
+                        {`moon_longitude: ${String(data.moon_longitude)}`}
+
+                      </p>
+                      <p className="text-gray-300 font-mono text-sm">
+                        {`sun_longitude: ${String(data.sun_longitude)}`}
+
                       </p>
                     </div>
                   )}
