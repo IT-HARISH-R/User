@@ -109,11 +109,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <LuPhone className="h-4 w-4 text-violet-400" />
-                <span>+91 98765 43210</span>
+                <span>+91 xxxxxxxxxx</span>
               </li>
               <li className="flex items-center space-x-2">
                 <LuMapPin className="h-4 w-4 text-purple-400" />
-                <span>Mumbai, India</span>
+                <span>Salem tamil nadu, India</span>  
               </li>
             </ul>
           </motion.div>

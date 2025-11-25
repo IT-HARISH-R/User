@@ -8,6 +8,8 @@ const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
+  
+
   // Navigation links (dynamic based on user)
   const mainLinks = [
     { to: "/", label: "Home" },

@@ -18,7 +18,9 @@ import Users from './components/Dashboard/Users';
 import Layout from './components/Layout';
 import TodayPredictions from './components/TodayPredictions';
 import ZodiacDetailPage from './components/Home/ZodiacDetailPage';
-import VoiceChat from './components/VoiceChat';
+import { VoiceChat } from './components/voice-chat';
+
+
 
 const App = () => {
   const dispatch = useDispatch();
@@ -57,8 +59,9 @@ const App = () => {
         <Route path="/history" element={<AstroHistory />} />
         <Route path="/plans" element={<Plans />} />
 
-        <Route path="/chat" element={<Layout><VoiceChat /></Layout>} />
+        <Route path="/chat" element={<VoiceChat />} />
         <Route path="/today" element={<Layout><TodayPredictions /></Layout>} />
+
 
         {/* 🌟 Admin Routes (All wrapped inside Layout) */}
         <Route path="/admin" element={<Layout> <Dashboard /> </Layout>} />
