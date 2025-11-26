@@ -156,33 +156,35 @@ const HomePage = () => {
           {/* ✨ Feature Highlights */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-20">
             {[
-              { icon: LuChartBar, title: "Birth Chart Analysis", desc: "Detailed planetary positions", color: "from-blue-500 to-cyan-500" },
-              { icon: LuZap, title: "Daily Insights", desc: "Personalized horoscopes", color: "from-purple-500 to-pink-500" },
-              { icon: LuStar, title: "Future Predictions", desc: "Accurate Vedic forecasts", color: "from-orange-500 to-yellow-500" }
+              { icon: LuChartBar, title: "Birth Chart Analysis", desc: "Detailed planetary positions", color: "from-blue-500 to-cyan-500", Link: "/predict" },
+              { icon: LuZap, title: "Daily Insights", desc: "Personalized horoscopes", color: "from-purple-500 to-pink-500", Link: "/chat" },
+              { icon: LuStar, title: "Future Predictions", desc: "Accurate Vedic forecasts", color: "from-orange-500 to-yellow-500", Link: "/future" }
             ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: hasAnimated ? 0 : 0.9 + index * 0.1,
-                  duration: hasAnimated ? 0 : 0.6
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  y: -5,
-                  transition: { duration: 0.2 }
-                }}
-                className="group p-4 sm:p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-white/20 shadow-2xl text-center cursor-pointer"
-              >
-                <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r ${feature.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm sm:text-base">{feature.desc}</p>
-              </motion.div>
+              <Link key={feature.title} to={feature.Link}>
+                <motion.div
+                  initial={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: hasAnimated ? 0 : 0.9 + index * 0.1,
+                    duration: hasAnimated ? 0 : 0.6
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    y: -5,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="group p-4 sm:p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-white/20 shadow-2xl text-center cursor-pointer"
+                >
+                  <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r ${feature.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{feature.title}</h3>
+                  <p className="text-gray-400 text-sm sm:text-base">{feature.desc}</p>
+                </motion.div>
+              </Link>
             ))}
           </motion.div>
+
 
           {/* 🔯 Zodiac Section */}
           <motion.div variants={itemVariants} className="my-12 sm:my-16">

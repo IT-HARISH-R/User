@@ -69,6 +69,18 @@ const astroServices = {
       throw err;
     }
   },
+  future_predictions: async () => {
+    try {
+      const res = await api.post(`future/predict-future/`);
+      console.log(res.data)
+      return res.data;
+    } catch (err) {
+      console.error("future chat error:", err);
+      throw err;
+    }
+  },
+
+
 };
 
 export default astroServices;

@@ -19,6 +19,7 @@ import Layout from './components/Layout';
 import TodayPredictions from './components/TodayPredictions';
 import ZodiacDetailPage from './components/Home/ZodiacDetailPage';
 import { VoiceChat } from './components/voice-chat';
+import FuturePredictions from './components/Home/FuturePredictions';
 
 
 
@@ -60,6 +61,7 @@ const App = () => {
         <Route path="/plans" element={<Plans />} />
 
         <Route path="/chat" element={<VoiceChat />} />
+        <Route path="/future" element={<FuturePredictions />} />
         <Route path="/today" element={<Layout><TodayPredictions /></Layout>} />
 
 
