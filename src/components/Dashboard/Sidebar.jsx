@@ -45,7 +45,7 @@ const Sidebar = ({
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
-
+ 
             {/* Sidebar */}
             <div
                 className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-800 shadow-xl transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"

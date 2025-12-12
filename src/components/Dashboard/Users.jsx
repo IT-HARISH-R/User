@@ -18,11 +18,11 @@ const Users = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [expandedUser, setExpandedUser] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
 
   // Fetch users from backend
   const fetchUsers = async () => {
@@ -95,7 +95,7 @@ const Users = () => {
   useEffect(() => {
     const totalFiltered = filteredUsers.length;
     setTotalPages(Math.ceil(totalFiltered / usersPerPage));
-    
+
     // Reset to page 1 if current page doesn't exist
     if (currentPage > Math.ceil(totalFiltered / usersPerPage) && currentPage > 1) {
       setCurrentPage(1);
@@ -169,7 +169,7 @@ const Users = () => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxVisiblePages = 5;
-    
+
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total pages is less than max visible
       for (let i = 1; i <= totalPages; i++) {
@@ -202,7 +202,7 @@ const Users = () => {
         pageNumbers.push(totalPages);
       }
     }
-    
+
     return pageNumbers;
   };
 
@@ -318,7 +318,7 @@ const Users = () => {
             className="px-3 py-2 border rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
           >
             <option value="all">All Plans</option>
-            <option value="premium">Premium</option>
+            {/* <option value="premium">Premium</option> */}
             <option value="free">Free</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
@@ -386,8 +386,8 @@ const Users = () => {
                 <div
                   key={userId}
                   className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border ${isExpanded
-                      ? "border-indigo-500 dark:border-indigo-400"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-indigo-500 dark:border-indigo-400"
+                    : "border-gray-200 dark:border-gray-700"
                     } overflow-hidden transition-all duration-300 hover:shadow-md`}
                 >
                   {/* User Header */}
@@ -421,7 +421,8 @@ const Users = () => {
                             </h3>
                             {user.is_premium && (
                               <span className="px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-medium rounded-full">
-                                PREMIUM
+                                {/* PREMIUM */}
+                                {user.plan_type}
                               </span>
                             )}
                           </div>
@@ -446,8 +447,8 @@ const Users = () => {
                             </div>
 
                             <div className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === "admin"
-                                ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                                : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                              ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                               }`}>
                               {user.role?.toUpperCase() || "USER"}
                             </div>
@@ -576,8 +577,8 @@ const Users = () => {
                             <div className="flex justify-between">
                               <span className="text-gray-500 dark:text-gray-400">Plan Type</span>
                               <span className={`px-2 py-1 rounded text-xs font-medium ${user.plan_type === 'premium'
-                                  ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                                ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
                                 }`}>
                                 {user.plan_type?.toUpperCase() || 'FREE'}
                               </span>
@@ -586,29 +587,23 @@ const Users = () => {
                         </div>
 
                         {/* Activity Stats */}
-                        <div className="space-y-3">
-                          <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Activity className="w-4 h-4" />
-                            Activity Statistics
-                          </h4>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                              <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-                                {getPredictionsCount(user)}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">Predictions</div>
-                            </div>
-                            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                              <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                                {user.last_active ? 'Active' : 'Inactive'}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">Status</div>
-                            </div>
-                          </div>
-                          <button className="w-full mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                            View Full Activity
-                          </button>
-                        </div>
+                   <div className="space-y-3">
+  <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+    <Activity className="w-4 h-4" />
+    Activity Statistics
+  </h4>
+  <div className="flex justify-center">
+    <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full max-w-[200px]">
+      <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400 text-center">
+        {getPredictionsCount(user)}
+      </div>
+      <div className="text-xs text-gray-500 dark:text-gray-400 text-center">Predictions</div>
+    </div>
+  </div>
+  <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm w-full">
+    View Full Activity
+  </button>
+</div>
                       </div>
                     </div>
                   )}
@@ -659,8 +654,8 @@ const Users = () => {
                         <button
                           onClick={() => handlePageChange(pageNum)}
                           className={`px-3 py-2 min-w-[40px] rounded-lg transition-colors ${currentPage === pageNum
-                              ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                              : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                            : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                             }`}
                         >
                           {pageNum}

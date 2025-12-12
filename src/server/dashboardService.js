@@ -16,7 +16,7 @@ export const dashboardService = {
   getRecentActivities: async () => {
     try {
       const response = await api.get('api/dashboard/recent-activities/');
-      console.log(response)
+      console.log("Get recent activities", response)
       return response.data;
     } catch (error) {
       console.error('Error fetching recent activities:', error);
@@ -28,6 +28,7 @@ export const dashboardService = {
   getRevenueAnalytics: async () => {
     try {
       const response = await api.get('api/dashboard/revenue-analytics/');
+      console.log("Get revenue analytics", response)
       return response.data;
     } catch (error) {
       console.error('Error fetching revenue analytics:', error);

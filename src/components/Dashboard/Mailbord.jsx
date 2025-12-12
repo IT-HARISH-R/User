@@ -168,14 +168,14 @@ const Mailbord = () => {
     return (
       <span className={`text-xs ${color} mt-1`}>
         <TrendingUp className="inline h-3 w-3 mr-1" />
-        {sign}{value}%
+        {sign}{value}
       </span>
     );
-  };
+  }; 
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
+      <div className="flex flex-col  items-center justify-center h-64">
         <Loader className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
         <span className="mt-4 text-gray-600 dark:text-gray-400">Loading dashboard...</span>
       </div>
@@ -199,7 +199,7 @@ const Mailbord = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header with Refresh Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -247,9 +247,9 @@ const Mailbord = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-1">
-                {formatCurrency(stats?.revenue?.total)}
+                {formatCurrency(revenueData?.metrics?.total_revenue)}
               </p>
-              {getPercentageChange(stats?.revenue?.growth_rate)}
+              {getPercentageChange(revenueData?.metrics?.revenue_growth)}
             </div>
           </div>
         </div>
@@ -279,9 +279,9 @@ const Mailbord = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Subscriptions</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-1">
-                {stats?.subscriptions?.active?.toLocaleString() || '0'}
+                {revenueData?.metrics?.active_subscriptions || '0'}
               </p>
-              {getPercentageChange(stats?.subscriptions?.growth_rate)}
+              {getPercentageChange(revenueData?.metrics?.subscription_growth)}
             </div>
           </div>
         </div>
@@ -313,7 +313,7 @@ const Mailbord = () => {
           },
           {
             title: "Today's Revenue",
-            value: formatCurrency(stats?.revenue?.today),
+            value: formatCurrency(revenueData?.metrics?.todays_revenue),
             icon: <span className="text-green-600 dark:text-green-400 font-bold">$</span>,
             bgColor: 'bg-green-100 dark:bg-green-900',
             borderColor: 'border-l-green-500'
@@ -568,7 +568,7 @@ const Mailbord = () => {
           },
           {
             title: 'Weekly Revenue',
-            value: formatCurrency(stats?.revenue?.week),
+            value: formatCurrency(revenueData?.metrics?.weekly_revenue),
             description: 'Revenue generated this week',
             gradient: 'from-orange-500 to-red-600',
             textColor: 'text-orange-100'
