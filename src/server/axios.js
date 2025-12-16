@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "https://astro-backend-rwhj.onrender.com",
+  // baseURL: "http://127.0.0.1:8000/",
   withCredentials: true,
 });
 
@@ -35,7 +36,8 @@ api.interceptors.response.use(
           console.log("Attempting token refresh...")
           // ✅ Correct API call for token refresh
           const response = await axios.post(
-            "http://127.0.0.1:8000/api/auth/refresh/",
+            "https://astro-backend-rwhj.onrender.com/api/auth/refresh/",
+            // "http://127.0.0.1:8000/api/auth/refresh/",
             { refresh: refreshToken }
           );
           console.log("Token refresh response:", response.data)
