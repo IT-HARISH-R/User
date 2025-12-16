@@ -20,6 +20,7 @@ import TodayPredictions from './components/TodayPredictions';
 import ZodiacDetailPage from './components/Home/ZodiacDetailPage';
 import { VoiceChat } from './components/voice-chat';
 import FuturePredictions from './components/Home/FuturePredictions';
+import Contact from './Page/Contact';
 
 
 
@@ -52,10 +53,11 @@ const App = () => {
         {/* 🌟 Public Routes */}
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/horoscope/:sign" element={<Layout><ZodiacDetailPage /></Layout>} />
-       
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Layout><Profile /></Layout>} />
+        <Route path="/Contact" element={<Layout><Contact /></Layout>} />
         <Route path="/predict" element={<AstroForm />} />
         <Route path="/history" element={<AstroHistory />} />
         <Route path="/plans" element={<Plans />} />

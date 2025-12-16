@@ -587,23 +587,23 @@ const Users = () => {
                         </div>
 
                         {/* Activity Stats */}
-                   <div className="space-y-3">
-  <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-    <Activity className="w-4 h-4" />
-    Activity Statistics
-  </h4>
-  <div className="flex justify-center">
-    <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full max-w-[200px]">
-      <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400 text-center">
-        {getPredictionsCount(user)}
-      </div>
-      <div className="text-xs text-gray-500 dark:text-gray-400 text-center">Predictions</div>
-    </div>
-  </div>
-  <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm w-full">
-    View Full Activity
-  </button>
-</div>
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                            <Activity className="w-4 h-4" />
+                            Activity Statistics
+                          </h4>
+                          <div className="flex justify-center">
+                            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full max-w-[200px]">
+                              <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400 text-center">
+                                {getPredictionsCount(user)}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 text-center">Predictions</div>
+                            </div>
+                          </div>
+                          <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm w-full">
+                            View Full Activity
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

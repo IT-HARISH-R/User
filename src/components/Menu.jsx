@@ -8,7 +8,7 @@ const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  
+
 
   // Navigation links (dynamic based on user)
   const mainLinks = [
@@ -17,18 +17,19 @@ const Menu = () => {
     user && { to: "/predict", label: "Prediction" },
     user && { to: "/chat", label: "Chat" },
     user && { to: "/today", label: "Today" },
+    { to: "/contact", label: " Contact" },
   ].filter(Boolean);
 
   const authLinks = user
     ? [
-        user?.role === "admin"
-          ? { to: "/admin", label: "Dashboard" }
-          : { to: "/profile", label: "Profile" },
-      ]
+      user?.role === "admin"
+        ? { to: "/admin", label: "Dashboard" }
+        : { to: "/profile", label: "Profile" },
+    ]
     : [
-        { to: "/login", label: "Login" },
-        { to: "/signup", label: "Sign Up" },
-      ];
+      { to: "/login", label: "Login" },
+      { to: "/signup", label: "Sign Up" },
+    ];
 
   // Reusable link renderer
   const renderLink = (link) => {
@@ -92,9 +93,8 @@ const Menu = () => {
 
       {/* Mobile dropdown menu */}
       <div
-        className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="bg-indigo-900/95 backdrop-blur-sm border-t border-indigo-700 px-4 py-4 flex flex-col gap-3">
           {mainLinks.map(renderLink)}
