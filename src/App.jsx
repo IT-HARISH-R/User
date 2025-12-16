@@ -18,9 +18,9 @@ import Users from './components/Dashboard/Users';
 import Layout from './components/Layout';
 import TodayPredictions from './components/TodayPredictions';
 import ZodiacDetailPage from './components/Home/ZodiacDetailPage';
-import  VoiceChat  from './components/voice-chat/VoiceChat';
 import FuturePredictions from './components/Home/FuturePredictions';
 import Contact from './Page/Contact';
+import VoiceChat from './components/VoiceChat/VoiceChat';
 
 
 
