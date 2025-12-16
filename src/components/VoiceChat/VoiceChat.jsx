@@ -119,7 +119,7 @@ const VoiceChat = () => {
   const nav = useNavigate()
   useEffect(() => {
     if (!user) {
-      nav("login")
+      nav("/login")
     }
     loadChatList();
     createNewChat();

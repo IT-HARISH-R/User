@@ -9,6 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { setPrediction, setLoading, setError, clearPrediction } from '../../redux/slices/predictionSlice';
 import astroServices from '../../server/astroServices';
+import { useNavigate } from 'react-router-dom';
 
 const FuturePredictions = () => {
     const user = useSelector((state) => state.auth.user);
@@ -199,7 +200,13 @@ const FuturePredictions = () => {
         }
         return value;
     };
-
+    const nav = useNavigate()
+    useEffect(() => {
+        if (!user) {
+            nav("/login")
+        }
+    }
+    )
     if (!user) {
         return (
             <div className="min-h-screen pt-16 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
@@ -227,7 +234,7 @@ const FuturePredictions = () => {
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
                         onClick={() => setMobileSidebarOpen(false)}
                     />
-                    
+
                     {/* Sidebar */}
                     <motion.div
                         initial={{ x: '-100%' }}
