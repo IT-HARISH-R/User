@@ -16,7 +16,7 @@ const Menu = () => {
     { to: "/plans", label: "Plans" },
     user && { to: "/predict", label: "Prediction" },
     user && { to: "/chat", label: "Chat" },
-    user && { to: "/today", label: "Today" },
+    // user && { to: "/today", label: "Today" },
     { to: "/contact", label: " Contact" },
   ].filter(Boolean);
 

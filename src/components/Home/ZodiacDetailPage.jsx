@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { LuArrowLeft, LuSun, LuMoon, LuStar, LuCalendar } from "react-icons/lu";
 import { StarBackground } from "../StarBackground";
 import { fetchPredictions } from "../../redux/slices/zodiacSlice";
-
+import Loading from "../Loading"
 // 🌟 High-quality zodiac images from reliable sources
 const zodiacImages = {
     aries: "https://tse1.mm.bing.net/th/id/OIP.oeSjmPTQRMZ_MzxXwTcC2wHaD5?pid=Api&P=0&h=180",
@@ -62,9 +62,7 @@ const ZodiacDetailPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex justify-center items-center bg-black text-white text-xl">
-                Loading today's predictions...
-            </div>
+            <Loading />
         );
     }
 

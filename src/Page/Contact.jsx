@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { StarBackground } from "../components/StarBackground";
@@ -22,6 +22,10 @@ const Contact = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+   useEffect(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+      }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
