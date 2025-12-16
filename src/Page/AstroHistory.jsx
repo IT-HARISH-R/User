@@ -153,7 +153,7 @@ const AstroHistory = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/predict")}
               className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold shadow-lg transition-all duration-300"
             >
               Begin Your Journey
