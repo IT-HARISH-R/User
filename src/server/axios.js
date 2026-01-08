@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "https://astro-backend-1-fftg.onrender.com/",
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "https://astro-backend-1-fftg.onrender.com/",
+  // baseURL: "http://127.0.0.1:8000/",
   withCredentials: true,
 });
 
