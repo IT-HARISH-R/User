@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { StarBackground } from "../components/StarBackground";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaPaperPlane, FaUser, FaComment, FaArrowLeft, FaLinkedin, FaTwitter, FaGithub, FaInstagram } from "react-icons/fa";
 import { MdEmail, MdSupportAgent } from "react-icons/md";
-import ContactServices from "../server/ContactServices";
+import ContactServices from "../server/contactServices";
+
 
 const Contact = () => {
   const navigate = useNavigate();
