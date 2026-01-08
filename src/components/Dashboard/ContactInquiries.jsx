@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   CheckCircle, XCircle, MessageSquare, RefreshCw, Clock,
 } from "lucide-react";
-import ContactServices from "../../server/contactServices";
+import ContactServices from "../server/ContactServices";
 // import ContactServices from "../../server/contactServices";
 
 const ContactInquiries = () => {
