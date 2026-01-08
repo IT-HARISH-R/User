@@ -5,7 +5,8 @@ import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   CheckCircle, XCircle, MessageSquare, RefreshCw, Clock,
 } from "lucide-react";
-import contactServices from "../../server/contactServices";
+import ContactServices from "../../server/contactServices";
+// import ContactServices from "../../server/contactServices";
 
 const ContactInquiries = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -36,7 +37,7 @@ const ContactInquiries = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await contactServices.getInquiries();
+      const response = await ContactServices.getInquiries();
       console.log("API Response:", response);
 
       if (response) {
