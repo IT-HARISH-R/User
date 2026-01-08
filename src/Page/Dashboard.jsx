@@ -9,6 +9,7 @@ import { Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Analytics from '../components/Dashboard/Analytics';
 import Payments from '../components/Dashboard/Payments';
+import ContactInquiries from '../components/Dashboard/ContactInquiries';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -101,6 +102,8 @@ const Dashboard = () => {
             </div>
           )} */}
           {activeSection === 'Analytics' && (<Analytics />)}
+
+          {activeSection === 'Inquiries' && (<ContactInquiries />)}
 
           {activeSection === 'Payments' && (<Payments />)}
           {/* {activeSection === 'Payments' && (

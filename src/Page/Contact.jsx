@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { StarBackground } from "../components/StarBackground";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaPaperPlane, FaUser, FaComment, FaArrowLeft, FaLinkedin, FaTwitter, FaGithub, FaInstagram } from "react-icons/fa";
 import { MdEmail, MdSupportAgent } from "react-icons/md";
+import ContactServices from "../server/ContactServices";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -23,17 +24,18 @@ const Contact = () => {
     });
   };
 
-   useEffect(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-      }, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    const res = await ContactServices.Post(formData)
+    console.log(res)
+
     // Success simulation
     setSubmitStatus("success");
     setIsSubmitting(false);
@@ -43,7 +45,7 @@ const Contact = () => {
       subject: "",
       message: "",
     });
-    
+
     // Reset status after 5 seconds
     setTimeout(() => {
       setSubmitStatus(null);
@@ -110,7 +112,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start relative overflow-hidden px-4 py-8 bg-gradient-to-br from-gray-900 via-indigo-950/80 to-purple-900 pt-24">
       <StarBackground starDensity={0.002} twinkleSpeed={3} />
-      
+
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl"></div>
@@ -363,9 +365,8 @@ const Contact = () => {
                     disabled={isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 ${
-                      isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                    }`}
+                    className={`w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
                   >
                     {isSubmitting ? (
                       <>

@@ -8,6 +8,7 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
+    Mail,
 } from "lucide-react";
 
 const Sidebar = ({
@@ -20,6 +21,7 @@ const Sidebar = ({
 }) => {
     const navItems = [
         { name: "Dashboard", icon: <Activity size={20} />, badge: null },
+        { name: "Inquiries", icon: <Mail size={20} />, badge: null },
         { name: "Plans", icon: <Layers size={20} />, badge: 3 },
         { name: "Users", icon: <Users size={20} />, badge: null },
         { name: "Analytics", icon: <BarChart3 size={20} />, badge: "New" },
@@ -45,7 +47,7 @@ const Sidebar = ({
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
- 
+
             {/* Sidebar */}
             <div
                 className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-800 shadow-xl transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -75,8 +77,8 @@ const Sidebar = ({
                             key={index}
                             onClick={() => handleNavClick(item.name)}
                             className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group ${activeSection === item.name
-                                    ? "bg-indigo-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border-r-2 border-indigo-600 dark:border-indigo-400 font-semibold"
-                                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
+                                ? "bg-indigo-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border-r-2 border-indigo-600 dark:border-indigo-400 font-semibold"
+                                : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
                                 } ${collapsed ? "justify-center px-2" : ""}`}
                             title={collapsed ? item.name : ""}
                         >
@@ -93,8 +95,8 @@ const Sidebar = ({
                             {/* Badges */}
                             {!collapsed && item.badge && (
                                 <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${typeof item.badge === "number"
-                                        ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                                        : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                    ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                    : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                     }`}>
                                     {item.badge}
                                 </span>
@@ -103,8 +105,8 @@ const Sidebar = ({
                             {collapsed && item.badge && (
                                 <div className="absolute top-2 right-2">
                                     <span className={`flex h-2 w-2 ${typeof item.badge === "number"
-                                            ? "bg-red-500"
-                                            : "bg-green-500"
+                                        ? "bg-red-500"
+                                        : "bg-green-500"
                                         } rounded-full`} />
                                 </div>
                             )}

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import authServices from "../server/authServices";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/slices/authSlice";
 import Loading from "../components/Loading";
 
@@ -15,6 +15,11 @@ export const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user) navigate("/")
+  })
   const handlLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -27,7 +32,7 @@ export const Login = () => {
 
 
       // alert("Login Success");
-      navigate("/")
+      navigate(-1)
 
       const profileRes = await authServices.getProfile();
 
