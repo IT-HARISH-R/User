@@ -4,7 +4,7 @@ import {
   AlertCircle, Filter, Search, Download, Eye, MoreVertical,
   Loader2, RefreshCw, TrendingUp, TrendingDown, ExternalLink,
   Clock, User, Building, Smartphone, Globe, ChevronDown,
-  FileText, Receipt, Shield, Lock, Unlock, Mail
+  FileText, Receipt, Shield, Lock, Unlock, Mail, Ban
 } from 'lucide-react';
 import { paymentsService } from '../../server/paymentsService';
 
@@ -20,6 +20,14 @@ const Payments = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [paymentsPerPage] = useState(10);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1
+  });
+  const [downloading, setDownloading] = useState(false);
+  const [updatingPayment, setUpdatingPayment] = useState(null);
 
   // Date range options
   const dateRanges = [
@@ -56,18 +64,27 @@ const Payments = () => {
     try {
       setRefreshing(true);
       setError(null);
-      
+
       const data = await paymentsService.getPayments({
         dateRange,
         page: currentPage,
-        limit: paymentsPerPage
+        limit: paymentsPerPage,
+        status: statusFilter,
+        paymentMethod: paymentMethodFilter,
+        search: searchTerm
       });
-      
-      setPayments(data.payments);
-      
+
+      // FIX: Check if data exists and has payments array
+      setPayments(data.payments || []);
+
+      if (data.pagination) {
+        setPagination(data.pagination);
+      }
+
     } catch (err) {
       console.error('Error fetching payments:', err);
       setError('Failed to load payments data. Please try again.');
+      setPayments([]); // Set to empty array on error
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -76,7 +93,7 @@ const Payments = () => {
 
   useEffect(() => {
     fetchPayments();
-  }, [dateRange, currentPage]);
+  }, [dateRange, currentPage, statusFilter, paymentMethodFilter]);
 
   // Format currency
   const formatCurrency = (amount, currency = 'USD') => {
@@ -121,7 +138,7 @@ const Payments = () => {
   const getStatusBadge = (status) => {
     const option = statusOptions.find(opt => opt.value === status);
     if (!option) return null;
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${option.color}`}>
         {status === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
@@ -141,16 +158,27 @@ const Payments = () => {
     return <Icon className="w-4 h-4" />;
   };
 
-  // Calculate summary stats
+  // Calculate summary stats - FIXED: Add null check
   const calculateStats = () => {
-    if (!payments.length) return {};
-    
+    if (!payments || payments.length === 0) {
+      return {
+        totalAmount: 0,
+        totalCompleted: 0,
+        totalTransactions: 0,
+        completedCount: 0,
+        pendingCount: 0,
+        failedCount: 0,
+        successRate: 0,
+        avgTransaction: 0
+      };
+    }
+
     const totalAmount = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
     const completedPayments = payments.filter(p => p.status === 'completed');
     const totalCompleted = completedPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
     const pendingPayments = payments.filter(p => p.status === 'pending' || p.status === 'processing');
     const failedPayments = payments.filter(p => p.status === 'failed');
-    
+
     return {
       totalAmount,
       totalCompleted,
@@ -162,14 +190,14 @@ const Payments = () => {
     };
   };
 
-  // Filter payments
-  const filteredPayments = payments.filter(payment => {
-    const matchesSearch = 
+  // Filter payments - FIXED: Add null check
+  const filteredPayments = (payments || []).filter(payment => {
+    const matchesSearch =
       searchTerm === '' ||
       (payment.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (payment.user?.email?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (payment.transactionId?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (payment.plan?.toLowerCase().includes(searchTerm.toLowerCase()));
+      (payment.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (payment.plan?.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
     const matchesMethod = paymentMethodFilter === 'all' || payment.method === paymentMethodFilter;
@@ -179,20 +207,206 @@ const Payments = () => {
 
   const stats = calculateStats();
 
-  // Handle payment actions
-  const handleApprovePayment = (paymentId) => {
-    console.log('Approve payment:', paymentId);
-    // Implement approve logic
-  };
 
-  const handleRefundPayment = (paymentId) => {
-    console.log('Refund payment:', paymentId);
-    // Implement refund logic
-  };
+
+
+
 
   const handleViewDetails = (payment) => {
     setSelectedPayment(payment);
   };
+
+  // Handle download invoice
+  const handleDownloadInvoice = async (payment) => {
+    try {
+      // Create invoice data
+      const invoiceData = {
+        invoiceNumber: `INV-${payment.id}-${Date.now()}`,
+        date: new Date().toLocaleDateString(),
+        paymentId: payment.id,
+        transactionId: payment.transaction_id,
+        customer: payment.user?.username || 'Customer',
+        customerEmail: payment.user?.email || '',
+        plan: payment.plan?.name || 'N/A',
+        amount: payment.amount,
+        currency: payment.currency,
+        status: payment.status,
+        paymentMethod: paymentMethodOptions.find(m => m.value === payment.method)?.label || payment.method,
+        paymentDate: formatDate(payment.date),
+        paymentTime: formatTime(payment.date)
+      };
+
+      // Create HTML invoice
+      const invoiceHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Invoice ${invoiceData.invoiceNumber}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .invoice-container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; }
+            .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+            .company-info h1 { color: #4f46e5; margin: 0; }
+            .invoice-info { text-align: right; }
+            .invoice-details { margin: 30px 0; }
+            .detail-row { display: flex; margin-bottom: 10px; }
+            .detail-label { font-weight: bold; width: 200px; }
+            .amount { font-size: 24px; font-weight: bold; color: #4f46e5; text-align: right; }
+            .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-container">
+            <div class="header">
+              <div class="company-info">
+                <h1>Astroverse</h1>
+                <p>Payment Invoice</p>
+              </div>
+              <div class="invoice-info">
+                <h2>INVOICE</h2>
+                <p>${invoiceData.invoiceNumber}</p>
+                <p>Date: ${invoiceData.date}</p>
+              </div>
+            </div>
+            
+            <div class="invoice-details">
+              <div class="detail-row">
+                <div class="detail-label">Payment ID:</div>
+                <div>${invoiceData.paymentId}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Transaction ID:</div>
+                <div>${invoiceData.transactionId}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Customer Name:</div>
+                <div>${invoiceData.customer}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Customer Email:</div>
+                <div>${invoiceData.customerEmail}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Plan:</div>
+                <div>${invoiceData.plan}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Payment Method:</div>
+                <div>${invoiceData.paymentMethod}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Payment Date:</div>
+                <div>${invoiceData.paymentDate} ${invoiceData.paymentTime}</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Status:</div>
+                <div>${invoiceData.status.toUpperCase()}</div>
+              </div>
+            </div>
+            
+            <div class="amount">
+              Total Amount: ${formatCurrency(invoiceData.amount, invoiceData.currency)}
+            </div>
+            
+            <div class="footer">
+              <p>Thank you for your payment!</p>
+              <p>This is a computer-generated invoice and does not require a signature.</p>
+              <p>For any queries, contact: support@astroverse.com</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Create blob and download
+      const blob = new Blob([invoiceHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${invoiceData.invoiceNumber}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error('Error downloading invoice:', err);
+      setError('Failed to download invoice');
+    }
+  };
+
+  // Handle export payments
+  const handleExportPayments = async () => {
+    try {
+      setDownloading(true);
+      const exportData = await paymentsService.exportPayments({
+        dateRange,
+        status: statusFilter,
+        paymentMethod: paymentMethodFilter,
+        search: searchTerm
+      });
+
+      // Convert to CSV
+      const headers = [
+        'Transaction ID',
+        'User',
+        'Email',
+        'Plan',
+        'Amount',
+        'Currency',
+        'Payment Method',
+        'Status',
+        'Date',
+        'Gateway Payment ID'
+      ];
+
+      const csvRows = [
+        headers.join(','),
+        ...exportData.data.map(item => [
+          `"${item['Transaction ID']}"`,
+          `"${item['User']}"`,
+          `"${item['Email']}"`,
+          `"${item['Plan']}"`,
+          item['Amount'],
+          `"${item['Currency']}"`,
+          `"${item['Payment Method']}"`,
+          `"${item['Status']}"`,
+          `"${item['Date']}"`,
+          `"${item['Gateway Payment ID']}"`
+        ].join(','))
+      ];
+
+      const csvString = csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `payments-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (err) {
+      console.error('Error exporting payments:', err);
+      setError('Failed to export payments');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+      } else {
+        fetchPayments();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   if (loading) {
     return (
@@ -229,11 +443,24 @@ const Payments = () => {
             Manage transactions, refunds, and payment processing
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export Report</span>
+          <button
+            onClick={handleExportPayments}
+            disabled={downloading || payments.length === 0}
+            className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {downloading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="hidden sm:inline">Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">Export Report</span>
+              </>
+            )}
           </button>
           <button
             onClick={fetchPayments}
@@ -300,7 +527,7 @@ const Payments = () => {
               </p>
               <div className="mt-2">
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-green-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${stats.successRate}%` }}
                   ></div>
@@ -445,10 +672,10 @@ const Payments = () => {
                     <td className="px-4 sm:px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {payment.transactionId}
+                          {payment.transaction_id || 'N/A'}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {payment.plan}
+                          {payment.plan?.name || 'N/A'}
                         </span>
                       </div>
                     </td>
@@ -459,7 +686,7 @@ const Payments = () => {
                         </div>
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">
-                            {payment.user?.name || 'Unknown User'}
+                            {payment.user?.username || 'Unknown User'}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
                             {payment.user?.email}
@@ -507,24 +734,7 @@ const Payments = () => {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        {payment.status === 'pending' && (
-                          <button
-                            onClick={() => handleApprovePayment(payment.id)}
-                            className="p-1.5 text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
-                            title="Approve Payment"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        {payment.status === 'completed' && (
-                          <button
-                            onClick={() => handleRefundPayment(payment.id)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                            title="Issue Refund"
-                          >
-                            <Receipt className="w-4 h-4" />
-                          </button>
-                        )}
+
                         <button className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                           <MoreVertical className="w-4 h-4" />
                         </button>
@@ -538,6 +748,29 @@ const Payments = () => {
         )}
       </div>
 
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 py-4">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          >
+            Previous
+          </button>
+          <span className="text-gray-600 dark:text-gray-300">
+            Page {currentPage} of {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
+            disabled={currentPage === pagination.totalPages}
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {/* Payment Details Modal */}
       {selectedPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -550,7 +783,7 @@ const Payments = () => {
                     Payment Details
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Transaction ID: {selectedPayment.transactionId}
+                    Transaction ID: {selectedPayment.transaction_id}
                   </p>
                 </div>
                 <button
@@ -570,7 +803,7 @@ const Payments = () => {
                       {formatCurrency(selectedPayment.amount, selectedPayment.currency)}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {selectedPayment.plan}
+                      {selectedPayment.plan?.name}
                     </div>
                   </div>
                   <div>
@@ -589,7 +822,7 @@ const Payments = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400">Name</span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {selectedPayment.user?.name || 'N/A'}
+                          {selectedPayment.user?.username || 'N/A'}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -649,19 +882,19 @@ const Payments = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400">Base Amount</span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {formatCurrency(selectedPayment.baseAmount || selectedPayment.amount, selectedPayment.currency)}
+                          {formatCurrency(selectedPayment.amount * 0.9, selectedPayment.currency)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400">Tax</span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {formatCurrency(selectedPayment.tax || 0, selectedPayment.currency)}
+                          {formatCurrency(selectedPayment.amount * 0.05, selectedPayment.currency)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400">Processing Fee</span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {formatCurrency(selectedPayment.fee || 0, selectedPayment.currency)}
+                          {formatCurrency(selectedPayment.amount * 0.05, selectedPayment.currency)}
                         </span>
                       </div>
                       <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
@@ -676,7 +909,7 @@ const Payments = () => {
                   </div>
                 </div>
 
-                {/* Actions */}
+                {/* Action Buttons in Modal */}
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <button
                     onClick={() => setSelectedPayment(null)}
@@ -684,7 +917,14 @@ const Payments = () => {
                   >
                     Close
                   </button>
-                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+
+
+
+                  {/* Download Invoice button */}
+                  <button
+                    onClick={() => handleDownloadInvoice(selectedPayment)}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                  >
                     <Download className="w-4 h-4" />
                     Download Invoice
                   </button>

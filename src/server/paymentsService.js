@@ -1,110 +1,79 @@
-// Mock payments service - replace with real API calls
+import api from './axios';
+
 export const paymentsService = {
-  getPayments: async (params = {}) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+  // Get payments with filters
+  async getPayments(params = {}) {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // Add all parameters
+      if (params.dateRange) queryParams.append('dateRange', params.dateRange);
+      if (params.status) queryParams.append('status', params.status);
+      if (params.paymentMethod) queryParams.append('paymentMethod', params.paymentMethod);
+      if (params.search) queryParams.append('search', params.search);
+      if (params.page) queryParams.append('page', params.page);
+      if (params.limit) queryParams.append('limit', params.limit);
 
-    const { dateRange = '30d', page = 1, limit = 10 } = params;
-    
-    // Generate mock payments data
-    const generateMockPayments = () => {
-      const payments = [];
-      const statuses = ['completed', 'pending', 'failed', 'processing', 'refunded'];
-      const methods = ['card', 'paypal', 'stripe', 'razorpay', 'bank_transfer', 'wallet'];
-      const plans = ['Premium Monthly', 'Premium Yearly', 'Basic Plan', 'Enterprise', 'Trial'];
-      const users = [
-        { id: 1, name: 'John Doe', email: 'john@example.com' },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-        { id: 3, name: 'Robert Johnson', email: 'robert@example.com' },
-        { id: 4, name: 'Sarah Williams', email: 'sarah@example.com' },
-        { id: 5, name: 'Michael Brown', email: 'michael@example.com' },
-        { id: 6, name: 'Emily Davis', email: 'emily@example.com' },
-        { id: 7, name: 'David Wilson', email: 'david@example.com' },
-        { id: 8, name: 'Lisa Miller', email: 'lisa@example.com' },
-        { id: 9, name: 'James Taylor', email: 'james@example.com' },
-        { id: 10, name: 'Jennifer Anderson', email: 'jennifer@example.com' }
-      ];
-
-      // Generate payments based on date range
-      let days = 30;
-      switch (dateRange) {
-        case '7d': days = 7; break;
-        case '90d': days = 90; break;
-        case '1y': days = 365; break;
-        case 'all': days = 730; break;
-      }
-
-      for (let i = 0; i < limit; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - Math.floor(Math.random() * days));
-        
-        const user = users[Math.floor(Math.random() * users.length)];
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
-        const method = methods[Math.floor(Math.random() * methods.length)];
-        const plan = plans[Math.floor(Math.random() * plans.length)];
-        
-        const baseAmount = Math.floor(Math.random() * 200) + 20;
-        const tax = baseAmount * 0.1;
-        const fee = baseAmount * 0.03;
-        const totalAmount = baseAmount + tax + fee;
-
-        payments.push({
-          id: `txn_${Date.now()}_${i}`,
-          transactionId: `TXN${1000 + i}${Math.floor(Math.random() * 1000)}`,
-          user: { ...user },
-          amount: totalAmount,
-          baseAmount,
-          tax,
-          fee,
-          currency: 'USD',
-          status,
-          method,
-          plan,
-          duration: plan.includes('Monthly') ? 'Monthly' : plan.includes('Yearly') ? 'Yearly' : 'One-time',
-          date: date.toISOString(),
-          createdAt: date.toISOString(),
-          updatedAt: date.toISOString()
-        });
-      }
-
-      return payments;
-    };
-
-    const payments = generateMockPayments();
-    
-    return {
-      payments,
-      pagination: {
-        page,
-        limit,
-        total: 150,
-        totalPages: Math.ceil(150 / limit)
-      },
-      summary: {
-        totalAmount: payments.reduce((sum, p) => sum + p.amount, 0),
-        completedAmount: payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0),
-        pendingAmount: payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0),
-        totalTransactions: payments.length,
-        successRate: (payments.filter(p => p.status === 'completed').length / payments.length * 100).toFixed(1)
-      }
-    };
+      const response = await api.get(`/api/payments/?${queryParams.toString()}`);
+      console.log("getPayments data", response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+      throw error;
+    }
   },
 
-  approvePayment: async (paymentId) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    console.log('Approved payment:', paymentId);
-    return { success: true, message: 'Payment approved successfully' };
+  // Get payment details by ID
+  async getPaymentDetails(paymentId) {
+    try {
+      const response = await api.get(`/api/payments/${paymentId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching payment details:', error);
+      throw error;
+    }
   },
 
-  refundPayment: async (paymentId, amount) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    console.log('Refunded payment:', paymentId, 'Amount:', amount);
-    return { success: true, message: 'Refund processed successfully' };
+  // Update payment status
+  async updatePaymentStatus(paymentId, action, reason = '') {
+    try {
+      const response = await api.post(`/api/payments/${paymentId}/update-status/`, 
+        { action, reason }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      throw error;
+    }
   },
 
-  exportPayments: async (params) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Exporting payments with params:', params);
-    return { success: true, url: '/exports/payments.csv' };
+  // Export payments
+  async exportPayments(params = {}) {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (params.dateRange) queryParams.append('dateRange', params.dateRange);
+      if (params.status) queryParams.append('status', params.status);
+      if (params.paymentMethod) queryParams.append('paymentMethod', params.paymentMethod);
+      if (params.search) queryParams.append('search', params.search);
+
+      const response = await api.get(`/api/payments/export/?${queryParams.toString()}`);
+      console.log("exportPayments: ",response.data)
+      return response.data;
+    } catch (error) {
+      console.error('Error exporting payments:', error);
+      throw error;
+    }
+  },
+
+  // Get payment analytics
+  async getPaymentAnalytics() {
+    try {
+      const response = await api.get('/api/payments/analytics/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching payment analytics:', error);
+      throw error;
+    }
   }
 };

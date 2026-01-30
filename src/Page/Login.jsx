@@ -1,53 +1,221 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import authServices from "../server/authServices";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineExclamationCircle } from "react-icons/ai";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/slices/authSlice";
 import Loading from "../components/Loading";
 
 export const Login = () => {
-  const [email, setemail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: ""
+  });
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (user) navigate("/")
-  })
-  const handlLogin = async (e) => {
+    if (user) navigate(from);
+  }, [user, navigate, from]);
+
+  const validateForm = () => {
+    const newErrors = { email: "", password: "", general: "" };
+    let isValid = true;
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
+    }
+
+    // Password validation
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const clearErrors = () => {
+    setErrors({ email: "", password: "", general: "" });
+    setShowErrorAlert(false);
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+    clearErrors();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await authServices.Login({ email, password });
+
       console.log("Login Response:", res.data);
 
+      // Store tokens
       localStorage.setItem("accessToken", res.data.access);
       localStorage.setItem("refreshToken", res.data.refresh);
 
-
-      // alert("Login Success");
-      navigate(-1)
-
+      // Get user profile
       const profileRes = await authServices.getProfile();
-
       console.log("Profile Data:", profileRes.data);
+
+      // Dispatch login action with user data
       dispatch(login(profileRes.data));
+
+      // Show success message
+      showToast("Login successful! Redirecting...", "success");
+
+      // Navigate to previous page or home
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 1000);
+
     } catch (err) {
       console.error("Login Error:", err);
-      // alert(err.response.data.detail || "Login failed");
+
+      let errorMessage = "Login failed. Please try again.";
+
+      if (err.response) {
+        // Handle different HTTP status codes
+        switch (err.response.status) {
+          case 400:
+            errorMessage = "Invalid email or password format";
+            if (err.response.data.email) {
+              setErrors(prev => ({ ...prev, email: err.response.data.email[0] }));
+            }
+            if (err.response.data.password) {
+              setErrors(prev => ({ ...prev, password: err.response.data.password[0] }));
+            }
+            break;
+          case 401:
+            errorMessage = "Invalid email or password";
+            setErrors(prev => ({
+              ...prev,
+              general: "The email or password you entered is incorrect"
+            }));
+            break;
+          case 403:
+            errorMessage = "Account is inactive or blocked";
+            setErrors(prev => ({
+              ...prev,
+              general: "Your account is not active. Please contact support."
+            }));
+            break;
+          case 404:
+            errorMessage = "User not found";
+            setErrors(prev => ({
+              ...prev,
+              general: "No account found with this email address"
+            }));
+            break;
+          case 429:
+            errorMessage = "Too many attempts";
+            setErrors(prev => ({
+              ...prev,
+              general: "Too many login attempts. Please try again later."
+            }));
+            break;
+          case 500:
+            errorMessage = "Server error";
+            setErrors(prev => ({
+              ...prev,
+              general: "Server error. Please try again later."
+            }));
+            break;
+          default:
+            if (err.response.data.detail) {
+              errorMessage = err.response.data.detail;
+            } else if (err.response.data.message) {
+              errorMessage = err.response.data.message;
+            }
+            setErrors(prev => ({ ...prev, general: errorMessage }));
+        }
+      } else if (err.request) {
+        // Network error
+        errorMessage = "Network error. Please check your connection.";
+        setErrors(prev => ({ ...prev, general: errorMessage }));
+      } else {
+        // Other errors
+        errorMessage = "An unexpected error occurred";
+        setErrors(prev => ({ ...prev, general: errorMessage }));
+      }
+
+      setShowErrorAlert(true);
+      showToast(errorMessage, "error");
+
     } finally {
       setLoading(false);
     }
   };
-  if (loading) return <Loading text="Logging in..." />
+
+  // Toast notification function
+  const showToast = (message, type = "info") => {
+    // You can integrate a proper toast library here (like react-toastify)
+    // For now, using a simple alert
+    if (type === "error") {
+      alert(` ${message}`);
+    } else if (type === "success") {
+      alert(` ${message}`);
+    } else {
+      alert(`${message}`);
+    }
+  };
+
+  if (loading) return <Loading text="Logging in..." />;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-indigo-900 to-black relative overflow-hidden md:px-4">
+      {/* Error Alert */}
+      {showErrorAlert && errors.general && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-4"
+        >
+          <div className="bg-red-900/80 backdrop-blur-sm border border-red-500/50 rounded-xl p-4 shadow-2xl">
+            <div className="flex items-start gap-3">
+              <AiOutlineExclamationCircle className="text-red-300 mt-0.5 flex-shrink-0" size={20} />
+              <div className="flex-1">
+                <p className="text-red-100 font-medium">Login Error</p>
+                <p className="text-red-200/80 text-sm mt-1">{errors.general}</p>
+              </div>
+              <button
+                onClick={() => setShowErrorAlert(false)}
+                className="text-red-300 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* twinkling stars layer */}
       <div className="absolute inset-0 pointer-events-none">
         <svg className="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,50 +263,98 @@ export const Login = () => {
         </div>
 
         {/* Login form */}
-        <form className="space-y-4" onSubmit={handlLogin}>
+        <form className="space-y-4" onSubmit={handleLogin} noValidate>
+          {/* Email Field */}
           <div>
             <label className="text-sm text-indigo-200/70">Email</label>
             <motion.input
               whileFocus={{ scale: 1.01 }}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none"
+              className={`w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border placeholder-indigo-300 text-white outline-none transition-colors ${errors.email
+                  ? "border-red-500/50 focus:border-red-500"
+                  : "border-indigo-500/20 focus:border-indigo-500"
+                }`}
               placeholder="you@gmail.com"
+              type="email"
               name="email"
               required
               value={email}
-              onChange={(e) => setemail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) {
+                  setErrors(prev => ({ ...prev, email: "" }));
+                }
+              }}
+              disabled={loading}
             />
+            {errors.email && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-400 text-xs mt-1.5 flex items-center gap-1"
+              >
+                <AiOutlineExclamationCircle size={12} />
+                {errors.email}
+              </motion.p>
+            )}
           </div>
 
+          {/* Password Field */}
           <div className="relative">
             <label className="text-sm text-indigo-200/70">Password</label>
             <div className="flex items-center">
               <motion.input
                 whileFocus={{ scale: 1.01 }}
-                className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/20 placeholder-indigo-300 text-white outline-none pr-10"
+                className={`w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border placeholder-indigo-300 text-white outline-none pr-10 transition-colors ${errors.password
+                    ? "border-red-500/50 focus:border-red-500"
+                    : "border-indigo-500/20 focus:border-indigo-500"
+                  }`}
                 placeholder="Your secret constellation"
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) {
+                    setErrors(prev => ({ ...prev, password: "" }));
+                  }
+                }}
+                disabled={loading}
               />
               <div
-                className="absolute  right-3 mt-7 transform -translate-y-1/2 text-indigo-300 cursor-pointer"
-                onClick={() => setShowPassword(!showPassword)}
+                className={`absolute right-3 mt-7 transform -translate-y-1/2 cursor-pointer ${loading ? "text-indigo-500/50" : "text-indigo-300 hover:text-indigo-200"
+                  }`}
+                onClick={() => !loading && setShowPassword(!showPassword)}
               >
                 {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
               </div>
             </div>
+            {errors.password && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-400 text-xs mt-1.5 flex items-center gap-1"
+              >
+                <AiOutlineExclamationCircle size={12} />
+                {errors.password}
+              </motion.p>
+            )}
           </div>
 
           <div className="flex items-center justify-end text-sm text-indigo-200/70">
-            <a href="#" className="hover:underline">Forgot?</a>
+            <Link to="/forgot-password" className="hover:underline hover:text-indigo-300 transition-colors">
+              Forgot Password?
+            </Link>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md"
+            whileHover={!loading ? { scale: 1.02, y: -2 } : {}}
+            whileTap={!loading ? { scale: 0.98 } : {}}
+            className={`w-full mt-2 py-3 rounded-xl text-white font-medium shadow-md transition-all ${loading
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 cursor-not-allowed"
+                : "bg-gradient-to-r from-indigo-500 to-purple-500 hover:shadow-indigo-500/20"
+              }`}
             type="submit"
+            disabled={loading}
           >
             {loading ? (
               <div className="flex justify-center items-center gap-2">
@@ -170,7 +386,13 @@ export const Login = () => {
           </motion.button>
 
           <div className="pt-4 border-t border-indigo-600/20 text-center text-indigo-200/70">
-            Don't have an account? <Link className="text-indigo-300 hover:underline" to="/signup">Create one</Link>
+            Don't have an account?{" "}
+            <Link
+              className="text-indigo-300 hover:underline hover:text-indigo-200 transition-colors"
+              to="/signup"
+            >
+              Create one
+            </Link>
           </div>
         </form>
       </motion.div>
@@ -195,7 +417,13 @@ export const Login = () => {
           to { stroke-dasharray: 200 0; }
         }
         .animate-line { stroke-dasharray: 0 200; animation: draw-line 1.4s ease forwards; }
+        
+        /* Disabled state */
+        input:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       `}</style>
     </div>
   );
-}
+};

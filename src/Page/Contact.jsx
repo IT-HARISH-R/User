@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { StarBackground } from "../components/StarBackground";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaPaperPlane, FaUser, FaComment, FaArrowLeft, FaLinkedin, FaTwitter, FaGithub, FaInstagram } from "react-icons/fa";
 import { MdEmail, MdSupportAgent } from "react-icons/md";
-import contactsServices from "../server/contactsServices";
+import contactService from "../server/contactService";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     // Simulate API call
-    const res = await contactsServices.Post(formData)
+    const res = await contactService.Post(formData)
     console.log(res)
 
     // Success simulation

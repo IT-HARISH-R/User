@@ -1,6 +1,6 @@
 import api from "./axios";
 
-const contactsServices = {
+const contactService = {
     // Create new inquiry (for contact form)
     Post: async (data) => {
         try {
@@ -134,4 +134,4 @@ const contactsServices = {
     }
 };
 
-export default contactsServices;
+export default contactService;

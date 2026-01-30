@@ -5,8 +5,7 @@ import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   CheckCircle, XCircle, MessageSquare, RefreshCw, Clock,
 } from "lucide-react";
-import contactsServices from "../../server/contactsServices";
-
+import contactsService from "../../server/contactService"
 const ContactInquiries = () => {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +35,7 @@ const ContactInquiries = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await contactsServices.getInquiries();
+      const response = await contactsService.getInquiries();
       console.log("API Response:", response);
 
       if (response) {
@@ -140,7 +139,7 @@ const ContactInquiries = () => {
   // Handlers
   const handleMarkAsReplied = async (id) => {
     try {
-      await contactsServices.markAsReplied(id);
+      await contactsService.markAsReplied(id);
       fetchInquiries();
     } catch (err) {
       console.error("Error updating status:", err);
@@ -150,7 +149,7 @@ const ContactInquiries = () => {
 
   const handleArchive = async (id) => {
     try {
-      await contactsServices.archiveInquiry(id);
+      await contactsService.archiveInquiry(id);
       fetchInquiries();
     } catch (err) {
       console.error("Error archiving:", err);
@@ -166,7 +165,7 @@ const ContactInquiries = () => {
     }
 
     try {
-      await contactsServices.deleteInquiry(id);
+      await contactsService.deleteInquiry(id);
       fetchInquiries();
     } catch (err) {
       console.error("Error deleting inquiry:", err);
@@ -199,7 +198,7 @@ const ContactInquiries = () => {
         subject: currentReply.subject
       };
 
-      const response = await contactsServices.markAsRepliedWithEmail(currentReply.id, emailData);
+      const response = await contactsService.markAsRepliedWithEmail(currentReply.id, emailData);
 
       console.log("Email sent successfully:", response);
 
